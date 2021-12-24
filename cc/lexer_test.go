@@ -62,6 +62,37 @@ func TestLexer(t *testing.T) {
 				cc.NewToken(cc.RBRA, "]"),
 			},
 		},
+		{
+			name: "ignore line comment",
+			input: `C[1] // to be ignored
+D[1]`,
+			want: []cc.Token{
+				cc.NewToken(cc.C, "C"),
+				cc.NewToken(cc.LBRA, "["),
+				cc.NewToken(cc.INT, "1"),
+				cc.NewToken(cc.RBRA, "]"),
+				cc.NewToken(cc.D, "D"),
+				cc.NewToken(cc.LBRA, "["),
+				cc.NewToken(cc.INT, "1"),
+				cc.NewToken(cc.RBRA, "]"),
+			},
+		},
+		{
+			name: "ignore multiline comment",
+			input: `C[1] /* to be ignored
+desc
+*/ D[1]`,
+			want: []cc.Token{
+				cc.NewToken(cc.C, "C"),
+				cc.NewToken(cc.LBRA, "["),
+				cc.NewToken(cc.INT, "1"),
+				cc.NewToken(cc.RBRA, "]"),
+				cc.NewToken(cc.D, "D"),
+				cc.NewToken(cc.LBRA, "["),
+				cc.NewToken(cc.INT, "1"),
+				cc.NewToken(cc.RBRA, "]"),
+			},
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -81,8 +112,8 @@ func TestLexer(t *testing.T) {
 			assert.Equal(t, len(tc.want), len(got))
 			for i, w := range tc.want {
 				g := got[i]
-				assert.Equal(t, w.Type(), g.Type())
-				assert.Equal(t, w.Value(), g.Value())
+				assert.Equal(t, w.Type(), g.Type(), i)
+				assert.Equal(t, w.Value(), g.Value(), i)
 			}
 		})
 	}

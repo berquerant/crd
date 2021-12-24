@@ -42,7 +42,7 @@ type lexer struct {
 	buf       bytes.Buffer
 	result    *ast.Score
 	err       error
-	isReadInt bool
+	expectInt bool // if true, expect that the next token will be an integer
 }
 
 func NewLexer(r io.Reader) Lexer {
@@ -54,7 +54,7 @@ func NewLexer(r io.Reader) Lexer {
 }
 
 func (s *lexer) Scan() int {
-	s.scanIgnored()
+	s.discardIgnored()
 	switch s.Peek() {
 	case EOF:
 		return EOF
@@ -83,16 +83,27 @@ func (s *lexer) Scan() int {
 		s.next()
 		return REST
 	case '[':
-		s.isReadInt = true // for reading note value
+		s.expectInt = true // for reading note value
 		s.next()
 		return LBRA
 	case ']':
 		s.next()
 		return RBRA
 	case '/':
-		s.isReadInt = true // for reading note value denominator
 		s.next()
-		return SLASH
+		switch s.Peek() {
+		case '/':
+			s.discardRemainingRow()
+			s.ResetBuffer()
+			return s.Scan()
+		case '*':
+			s.discardMultilineComment()
+			s.ResetBuffer()
+			return s.Scan()
+		default:
+			s.expectInt = true
+			return SLASH
+		}
 	case 'b', '♭':
 		s.next()
 		return FLAT
@@ -100,17 +111,17 @@ func (s *lexer) Scan() int {
 		s.next()
 		return SHARP
 	case '+':
-		s.isReadInt = true // for reading accidental
+		s.expectInt = true // for reading accidental
 		s.next()
 		return PLUS
 	case '-':
-		s.isReadInt = true // for reading accidental
+		s.expectInt = true // for reading accidental
 		s.next()
 		return MINUS
 	}
 	if s.scanDigits() {
-		if s.isReadInt {
-			s.isReadInt = false
+		if s.expectInt {
+			s.expectInt = false
 			return INT
 		}
 		/* forth, sixth and seventh preceed the note value and accidentaled (added note or chord accidental) in this repository */
@@ -155,7 +166,23 @@ func (s *lexer) scanIdent() int {
 	return EOF
 }
 
-func (s *lexer) scanIgnored() {
+func (s *lexer) discardMultilineComment() {
+	var expectEOC bool
+	for x := s.Peek(); !(expectEOC && x == '/'); x = s.Peek() {
+		expectEOC = x == '*'
+		_ = s.Discard()
+	}
+	_ = s.Discard()
+}
+
+func (s *lexer) discardRemainingRow() {
+	for x := s.Peek(); x != '\n'; x = s.Peek() {
+		_ = s.Discard()
+	}
+	_ = s.Discard()
+}
+
+func (s *lexer) discardIgnored() {
 	for x := s.Peek(); unicode.IsSpace(x) || x == '|' || x == '｜'; x = s.Peek() {
 		_ = s.Discard()
 	}
