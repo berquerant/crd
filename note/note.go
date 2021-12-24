@@ -130,6 +130,7 @@ type Note interface {
 	Name() Name
 	Accidental() Accidental
 	Semitone() Semitone
+	Equal(other Note) bool
 }
 
 type note struct {
@@ -148,6 +149,9 @@ func (s *note) Name() Name             { return s.name }
 func (s *note) Accidental() Accidental { return s.accidental }
 func (s *note) Semitone() Semitone     { return s.name.Semitone().Sign(s.accidental) }
 func (s *note) String() string         { return fmt.Sprintf("%s%s", s.name, s.accidental) }
+func (s *note) Equal(other Note) bool {
+	return s.Name() == other.Name() && s.Accidental() == other.Accidental()
+}
 
 type Octave int
 
@@ -156,6 +160,7 @@ type SPN interface {
 	Octave() Octave
 	Note() Note
 	Semitone() Semitone
+	Equal(other SPN) bool
 }
 
 type spn struct {
@@ -172,6 +177,9 @@ func NewSPN(note Note, octave Octave) SPN {
 
 func (s *spn) Octave() Octave { return s.octave }
 func (s *spn) Note() Note     { return s.note }
+func (s *spn) Equal(other SPN) bool {
+	return s.Octave() == other.Octave() && s.Note().Equal(other.Note())
+}
 
 // Semitone returns a number of semitones when C0 is 0.
 func (s *spn) Semitone() Semitone { return Semitone(12*s.octave) + s.note.Semitone() }
@@ -183,10 +191,12 @@ type (
 	Value interface {
 		Beat() Beat
 		Raw() *big.Rat
+		Equal(other Value) bool
 	}
 	Beat interface {
 		Value() Value
 		Raw() *big.Rat
+		Equal(other Beat) bool
 	}
 )
 
@@ -209,8 +219,9 @@ func (s *value) Beat() Beat {
 		),
 	}
 }
-func (s *value) Raw() *big.Rat  { return s.Rat }
-func (s *value) String() string { return s.Rat.RatString() }
+func (s *value) Raw() *big.Rat          { return s.Rat }
+func (s *value) String() string         { return s.Rat.RatString() }
+func (s *value) Equal(other Value) bool { return s.Raw().RatString() == other.Raw().RatString() }
 
 func NewBeat(r *big.Rat) Beat { return &beat{r} }
 
@@ -222,5 +233,6 @@ func (s *beat) Value() Value {
 		),
 	}
 }
-func (s *beat) Raw() *big.Rat  { return s.Rat }
-func (s *beat) String() string { return s.Rat.RatString() }
+func (s *beat) Raw() *big.Rat         { return s.Rat }
+func (s *beat) String() string        { return s.Rat.RatString() }
+func (s *beat) Equal(other Beat) bool { return s.Raw().RatString() == other.Raw().RatString() }

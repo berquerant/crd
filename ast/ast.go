@@ -11,6 +11,7 @@ import (
 type Node interface {
 	IsNode()
 	Semitones() []note.Semitone
+	Equal(other Node) bool
 }
 
 type Score struct {
@@ -32,8 +33,14 @@ type Rest struct {
 }
 
 func (s *Rest) Semitones() []note.Semitone { return nil }
+func (s *Rest) String() string             { return fmt.Sprintf("R[%s]", s.Value) }
 
-func (s *Rest) String() string { return fmt.Sprintf("R[%s]", s.Value) }
+func (s *Rest) Equal(other Node) bool {
+	if x, ok := other.(*Rest); ok {
+		return s.Value.Equal(x.Value)
+	}
+	return false
+}
 
 type Chord struct {
 	ChordNote   *ChordNote
@@ -56,6 +63,13 @@ func (s *Chord) Semitones() []note.Semitone {
 
 func (s *Chord) String() string { return fmt.Sprintf("%s%s[%s]", s.ChordNote, s.ChordOption, s.Value) }
 
+func (s *Chord) Equal(other Node) bool {
+	if x, ok := other.(*Chord); ok {
+		return s.ChordNote.Equal(x.ChordNote) && s.ChordOption.Equal(x.ChordOption) && s.Value.Equal(x.Value)
+	}
+	return false
+}
+
 type ChordNote struct {
 	Name       note.Name
 	Octave     note.Octave
@@ -74,6 +88,10 @@ func (s *ChordNote) String() string {
 	return fmt.Sprintf("%s%s", s.Name, s.Accidental)
 }
 
+func (s *ChordNote) Equal(other *ChordNote) bool {
+	return s.Name == other.Name && s.Octave == other.Octave && s.Accidental == other.Accidental
+}
+
 type ChordOption struct {
 	IsMajor      bool
 	IsMinor      bool
@@ -86,7 +104,7 @@ type ChordOption struct {
 	Accidentaled int
 }
 
-func (s *ChordOption) equal(other *ChordOption) bool {
+func (s *ChordOption) Equal(other *ChordOption) bool {
 	if s == nil && other == nil {
 		return true
 	}
@@ -169,7 +187,7 @@ var chordOptionToChord = []struct {
 
 func (s *ChordOption) Name() (chord.Chord, bool) {
 	for _, c := range chordOptionToChord {
-		if s.equal(&c.option) {
+		if s.Equal(&c.option) {
 			return c.name, true
 		}
 	}
