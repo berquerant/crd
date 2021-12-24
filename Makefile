@@ -31,7 +31,7 @@ prepare:
 
 .PHONY: dist/crd
 dist/crd:
-	go build -o $@ cmd/crd/main.go
+	go build -o $@ main.go
 
 .PHONY: test
 test:
