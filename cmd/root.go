@@ -26,6 +26,7 @@ The node types are below:
   Meter
   Tempo
   Key
+  Instrument
 
 Chord is a musical chord.
 A string formatted like NOTE OPTION ON [VALUE].
@@ -74,7 +75,10 @@ available values are below:
 
   major
   minor
-`,
+
+Instrument is a midi instrument.
+A string formatted like inst["INSTRUMENT_NAME"].
+For example, inst["Acoustic Piano"]`,
 		PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 			verbose, _ := cmd.Flags().GetInt("verbose")
 			if verbose < 1 {

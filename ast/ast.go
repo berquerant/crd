@@ -25,7 +25,20 @@ func (s *Score) String() string {
 	return strings.Join(v, " ")
 }
 
-//go:generate marker -method IsNode -type Key,Tempo,Meter,Rest,Chord -output ast_marker_generated.go
+//go:generate marker -method IsNode -type Instrument,Key,Tempo,Meter,Rest,Chord -output ast_marker_generated.go
+
+type Instrument struct {
+	Name string
+}
+
+func (s *Instrument) Equal(other Node) bool {
+	if x, ok := other.(*Instrument); ok {
+		return s.Name == x.Name
+	}
+	return false
+}
+
+func (s *Instrument) String() string { return fmt.Sprintf("inst[%s]", s.Name) }
 
 type Key struct {
 	Key note.Key

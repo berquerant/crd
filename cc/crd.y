@@ -34,7 +34,7 @@ import (
 
 %type <score> score
 %type <nodeList> node_list
-%type <node> node rest chord tempo meter key
+%type <node> node rest chord tempo meter key instrument
 %type <value> value
 %type <chordNote>  chord_note
 %type <chordOption> chord_option
@@ -79,6 +79,8 @@ import (
 %token <token> TEMPO
 %token <token> METER
 %token <token> KEY
+%token <token> INSTRUMENT
+%token <token> STRING
 
 %%
 
@@ -98,7 +100,14 @@ node_list:
   }
 
 node:
-  rest | chord | tempo | meter | key
+  rest | chord | tempo | meter | key | instrument
+
+instrument:
+  INSTRUMENT LBRA STRING RBRA {
+    $$ = &ast.Instrument{
+      Name: $3.Value(),
+    }
+  }
 
 key:
   KEY LBRA name accidental key_major_minor RBRA {

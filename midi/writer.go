@@ -23,6 +23,8 @@ type (
 		Text(text string)
 		// Velocity appends an operation that sets velocity.
 		Velocity(velocity uint8)
+		// Instrument appends an operation that sets instrument.
+		Instrument(name string)
 		// Append appends an operation that adds notes.
 		Append(tones []note.Semitone, value note.Value)
 		// Rest appends an operation that adds a rest.
@@ -75,6 +77,13 @@ func (*writer) noteNumber(tone note.Semitone) uint8 {
 	center := note.NewSPN(note.NewNote(note.C, note.Natural), 4)
 	diff := center.Semitone() - 60
 	return uint8(tone - diff)
+}
+
+func (s *writer) Instrument(name string) {
+	s.add(func(w *mw.SMF) error {
+		logger.Get().Debug("[Instrument] %s", name)
+		return mw.Instrument(w, name)
+	})
 }
 
 func (s *writer) Key(name note.Name, accidental note.Accidental, isMinor bool) {
@@ -155,6 +164,8 @@ func NewASTWriter(w Writer) ASTWriter {
 func (s *astWriter) WriteNode(node ast.Node) {
 	logger.Get().Debug("[WriteNode] %s", node)
 	switch node := node.(type) {
+	case *ast.Instrument:
+		s.w.Instrument(node.Name)
 	case *ast.Key:
 		s.w.Key(node.Key.Name(), node.Key.Accidental(), node.Key.IsMinor())
 	case *ast.Meter:

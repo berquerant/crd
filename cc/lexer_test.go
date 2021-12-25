@@ -160,6 +160,16 @@ desc
 				cc.RBRA, "]",
 			),
 		},
+		{
+			name:  "instrument",
+			input: `inst["Acoustic Piano"]`,
+			want: newTokens(
+				cc.INSTRUMENT, "inst",
+				cc.LBRA, "[",
+				cc.STRING, "Acoustic Piano",
+				cc.RBRA, "]",
+			),
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

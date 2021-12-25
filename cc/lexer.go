@@ -128,6 +128,9 @@ func (s *lexer) Scan() int {
 		s.setExpectInt(true) // for reading accidental
 		s.next()
 		return MINUS
+	case '"':
+		s.scanTo('"')
+		return STRING
 	}
 	if s.scanDigits() {
 		/* forth, sixth and seventh preceed the note value and accidentaled (added note or chord accidental) in this repository */
@@ -153,6 +156,15 @@ func (s *lexer) setExpectInt(v bool) {
 
 func (*lexer) isAlpha(r rune) bool { return 'a' <= r && r <= 'z' || 'A' <= r && r <= 'Z' }
 func (*lexer) isDigit(r rune) bool { return '0' <= r && r <= '9' }
+
+func (s *lexer) scanTo(to rune) {
+	// expect peeking the beginning rune now
+	_ = s.Discard()
+	for x := s.Peek(); x != to; x = s.Peek() {
+		s.next()
+	}
+	_ = s.Discard() // discard the end rune
+}
 
 func (s *lexer) scanIdent() int {
 	if !s.isAlpha(s.Peek()) {
@@ -191,6 +203,8 @@ func (s *lexer) scanIdent() int {
 			return TEMPO
 		case "key":
 			return KEY
+		case "inst":
+			return INSTRUMENT
 		}
 	}
 	s.errorf("unknown ident %s", s.Buffer())

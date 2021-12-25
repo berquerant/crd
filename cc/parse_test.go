@@ -146,6 +146,17 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:  "instrument",
+			input: `inst["Acoustic Piano"]`,
+			want: &ast.Score{
+				NodeList: []ast.Node{
+					&ast.Instrument{
+						Name: "Acoustic Piano",
+					},
+				},
+			},
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
