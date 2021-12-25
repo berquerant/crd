@@ -58,6 +58,13 @@ func NewLexer(r io.Reader) Lexer {
 
 func (s *lexer) Scan() int {
 	s.discardIgnored()
+	if s.expectInt {
+		s.setExpectInt(false)
+		if s.scanDigits() {
+			return INT
+		}
+		s.setExpectInt(false) // int expected but not found
+	}
 	switch s.Peek() {
 	case EOF:
 		return EOF
@@ -123,10 +130,6 @@ func (s *lexer) Scan() int {
 		return MINUS
 	}
 	if s.scanDigits() {
-		if s.expectInt {
-			s.setExpectInt(false)
-			return INT
-		}
 		/* forth, sixth and seventh preceed the note value and accidentaled (added note or chord accidental) in this repository */
 		switch s.Buffer() {
 		case "4":

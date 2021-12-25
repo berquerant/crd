@@ -147,6 +147,19 @@ desc
 				cc.RBRA, "]",
 			),
 		},
+		{
+			name:  "on",
+			input: "C6/E[1]",
+			want: newTokens(
+				cc.C, "C",
+				cc.SIXTH, "6",
+				cc.SLASH, "/",
+				cc.E, "E",
+				cc.LBRA, "[",
+				cc.INT, "1",
+				cc.RBRA, "]",
+			),
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

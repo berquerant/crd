@@ -22,6 +22,7 @@ type yySymType struct {
 	token        Token
 	chordNote    *ast.ChordNote
 	chordOption  *ast.ChordOption
+	chordBase    *ast.ChordBase
 	value        note.Value
 	name         note.Name
 	augmented    bool
@@ -105,7 +106,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line cc/crd.y:251
+//line cc/crd.y:259
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -116,75 +117,75 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 81
+const yyLast = 85
 
 var yyAct = [...]int{
-	31, 9, 15, 16, 17, 18, 19, 20, 21, 14,
-	23, 42, 59, 58, 41, 55, 45, 24, 15, 16,
-	17, 18, 19, 20, 21, 11, 12, 13, 70, 68,
-	67, 69, 30, 29, 46, 28, 35, 74, 73, 72,
-	40, 47, 71, 51, 48, 39, 38, 34, 32, 33,
-	65, 63, 61, 27, 37, 57, 54, 53, 50, 44,
-	3, 52, 66, 22, 64, 62, 60, 56, 49, 43,
-	36, 26, 25, 10, 8, 7, 6, 5, 4, 2,
-	1,
+	31, 9, 14, 63, 23, 15, 16, 17, 18, 19,
+	20, 21, 43, 62, 59, 42, 48, 24, 15, 16,
+	17, 18, 19, 20, 21, 11, 12, 13, 74, 72,
+	71, 73, 30, 41, 69, 29, 28, 78, 77, 45,
+	44, 76, 50, 75, 55, 51, 52, 40, 39, 34,
+	32, 33, 67, 49, 36, 65, 27, 38, 61, 58,
+	57, 54, 47, 3, 56, 70, 22, 68, 66, 64,
+	60, 53, 46, 37, 26, 35, 25, 10, 8, 7,
+	6, 5, 4, 2, 1,
 }
 
 var yyPact = [...]int{
 	-3, -1000, -3, -1000, -1000, -1000, -1000, -1000, -1000, -2,
-	44, 16, 14, 13, 33, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, 29, -2, 46, -1000, 28, 27,
-	-19, -1000, -1000, -1000, -6, -1000, 54, -1000, -4, 17,
-	33, -1000, 26, 52, -1000, -1000, 25, 51, -5, 48,
-	-1000, -7, -8, -1000, -1000, -1000, 42, -1000, -1000, -1000,
-	40, -1000, 38, -1000, 15, -1000, -1000, 24, 21, 20,
-	19, -1000, -1000, -1000, -1000,
+	47, 17, 16, 13, 35, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -1000, 31, 37, 49, -1000, 30, 29,
+	-16, -1000, -1000, -1000, -5, -2, -16, 57, -1000, -4,
+	36, 35, -1000, 27, -1000, 35, 55, -1000, -1000, 26,
+	54, -6, -1000, 51, -1000, -7, -17, -1000, -1000, -1000,
+	45, -1000, -1000, -1000, 41, -1000, 22, -1000, 15, -1000,
+	-1000, 25, 23, 20, 19, -1000, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 80, 79, 60, 78, 77, 76, 75, 74, 10,
-	73, 72, 9, 0, 71, 70, 69, 68, 67, 66,
-	65, 64, 62, 61,
+	0, 84, 83, 63, 82, 81, 80, 79, 78, 4,
+	77, 76, 75, 2, 0, 74, 73, 72, 71, 70,
+	69, 68, 67, 65, 64,
 }
 
 var yyR1 = [...]int{
 	0, 1, 2, 2, 3, 3, 3, 3, 3, 8,
-	23, 23, 23, 6, 7, 4, 5, 10, 12, 12,
-	12, 12, 12, 12, 12, 13, 13, 13, 11, 14,
-	14, 15, 15, 16, 16, 17, 17, 18, 18, 19,
-	19, 20, 20, 21, 21, 22, 22, 22, 22, 22,
-	9, 9,
+	24, 24, 24, 6, 7, 4, 5, 10, 13, 13,
+	13, 13, 13, 13, 13, 14, 14, 14, 12, 12,
+	11, 15, 15, 16, 16, 17, 17, 18, 18, 19,
+	19, 20, 20, 21, 21, 22, 22, 23, 23, 23,
+	23, 23, 9, 9,
 }
 
 var yyR2 = [...]int{
 	0, 1, 1, 2, 1, 1, 1, 1, 1, 6,
-	0, 1, 1, 4, 6, 2, 3, 2, 1, 1,
-	1, 1, 1, 1, 1, 0, 1, 1, 9, 0,
-	1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-	1, 0, 1, 0, 1, 0, 2, 2, 2, 2,
-	3, 5,
+	0, 1, 1, 4, 6, 2, 4, 2, 1, 1,
+	1, 1, 1, 1, 1, 0, 1, 1, 0, 3,
+	9, 0, 1, 0, 1, 0, 1, 0, 1, 0,
+	1, 0, 1, 0, 1, 0, 1, 0, 2, 2,
+	2, 2, 3, 5,
 }
 
 var yyChk = [...]int{
 	-1000, -1, -2, -3, -4, -5, -6, -7, -8, 4,
-	-10, 28, 29, 30, -12, 21, 22, 23, 24, 25,
-	26, 27, -3, -9, 19, -11, -14, 9, 19, 19,
-	19, -13, 15, 16, 18, -9, -15, 8, 18, 18,
-	-12, 20, 17, -16, 5, 20, 17, -13, 18, -17,
-	6, 18, -23, 6, 5, 20, -18, 7, 20, 20,
-	-19, 10, -20, 11, -21, 12, -22, 15, 14, 16,
-	13, 18, 18, 18, 18,
+	-10, 28, 29, 30, -13, 21, 22, 23, 24, 25,
+	26, 27, -3, -9, 19, -11, -15, 9, 19, 19,
+	19, -14, 15, 16, 18, -12, 17, -16, 8, 18,
+	18, -13, 20, 17, -9, -13, -17, 5, 20, 17,
+	-14, 18, -14, -18, 6, 18, -24, 6, 5, 20,
+	-19, 7, 20, 20, -20, 10, -21, 11, -22, 12,
+	-23, 15, 14, 16, 13, 18, 18, 18, 18,
 }
 
 var yyDef = [...]int{
 	0, -2, 1, 2, 4, 5, 6, 7, 8, 0,
-	29, 0, 0, 0, 25, 18, 19, 20, 21, 22,
-	23, 24, 3, 15, 0, 0, 31, 30, 0, 0,
-	0, 17, 26, 27, 0, 16, 33, 32, 0, 0,
-	25, 50, 0, 35, 34, 13, 0, 10, 0, 37,
-	36, 0, 0, 11, 12, 51, 39, 38, 14, 9,
-	41, 40, 43, 42, 45, 44, 28, 0, 0, 0,
-	0, 46, 47, 48, 49,
+	31, 0, 0, 0, 25, 18, 19, 20, 21, 22,
+	23, 24, 3, 15, 0, 28, 33, 32, 0, 0,
+	0, 17, 26, 27, 0, 0, 0, 35, 34, 0,
+	0, 25, 52, 0, 16, 25, 37, 36, 13, 0,
+	10, 0, 29, 39, 38, 0, 0, 11, 12, 53,
+	41, 40, 14, 9, 43, 42, 45, 44, 47, 46,
+	30, 0, 0, 0, 0, 48, 49, 50, 51,
 }
 
 var yyTok1 = [...]int{
@@ -540,7 +541,7 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line cc/crd.y:84
+//line cc/crd.y:86
 		{
 			x := &ast.Score{NodeList: yyDollar[1].nodeList}
 			yylex.(Lexer).SetResult(x)
@@ -548,19 +549,19 @@ yydefault:
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line cc/crd.y:91
+//line cc/crd.y:93
 		{
 			yyVAL.nodeList = []ast.Node{yyDollar[1].node}
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line cc/crd.y:94
+//line cc/crd.y:96
 		{
 			yyVAL.nodeList = append(yyDollar[1].nodeList, yyDollar[2].node)
 		}
 	case 9:
 		yyDollar = yyS[yypt-6 : yypt+1]
-//line cc/crd.y:102
+//line cc/crd.y:104
 		{
 			yyVAL.node = &ast.Key{
 				Key: note.NewKey(yyDollar[3].name, yyDollar[4].accidental, yyDollar[5].keyMinor),
@@ -568,25 +569,25 @@ yydefault:
 		}
 	case 10:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line cc/crd.y:109
+//line cc/crd.y:111
 		{
 			yyVAL.keyMinor = false
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line cc/crd.y:110
+//line cc/crd.y:112
 		{
 			yyVAL.keyMinor = false
 		}
 	case 12:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line cc/crd.y:111
+//line cc/crd.y:113
 		{
 			yyVAL.keyMinor = true
 		}
 	case 13:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line cc/crd.y:114
+//line cc/crd.y:116
 		{
 			bpm := yylex.(Lexer).ParseInt(yyDollar[3].token.Value())
 			yyVAL.node = &ast.Tempo{
@@ -595,7 +596,7 @@ yydefault:
 		}
 	case 14:
 		yyDollar = yyS[yypt-6 : yypt+1]
-//line cc/crd.y:122
+//line cc/crd.y:124
 		{
 			l := yylex.(Lexer)
 			n := l.ParseUint8(yyDollar[3].token.Value())
@@ -607,29 +608,27 @@ yydefault:
 		}
 	case 15:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line cc/crd.y:133
+//line cc/crd.y:135
 		{
 			yyVAL.node = &ast.Rest{Value: yyDollar[2].value}
 		}
 	case 16:
-		yyDollar = yyS[yypt-3 : yypt+1]
-//line cc/crd.y:138
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line cc/crd.y:140
 		{
 			yyVAL.node = &ast.Chord{
 				ChordNote:   yyDollar[1].chordNote,
 				ChordOption: yyDollar[2].chordOption,
-				Value:       yyDollar[3].value,
+				ChordBase:   yyDollar[3].chordBase,
+				Value:       yyDollar[4].value,
 			}
 		}
 	case 17:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line cc/crd.y:147
+//line cc/crd.y:150
 		{
-			yyVAL.chordNote = &ast.ChordNote{
-				Name:       yyDollar[1].name,
-				Octave:     note.Octave(4),
-				Accidental: yyDollar[2].accidental,
-			}
+			n := note.NewSPN(note.NewNote(yyDollar[1].name, yyDollar[2].accidental), note.Octave(4))
+			yyVAL.chordNote = &ast.ChordNote{SPN: n}
 		}
 	case 18:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -692,8 +691,22 @@ yydefault:
 			yyVAL.accidental = note.Flat
 		}
 	case 28:
+		yyDollar = yyS[yypt-0 : yypt+1]
+//line cc/crd.y:170
+		{
+			yyVAL.chordBase = nil
+		}
+	case 29:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line cc/crd.y:171
+		{
+			yyVAL.chordBase = &ast.ChordBase{
+				Note: note.NewNote(yyDollar[2].name, yyDollar[3].accidental),
+			}
+		}
+	case 30:
 		yyDollar = yyS[yypt-9 : yypt+1]
-//line cc/crd.y:178
+//line cc/crd.y:186
 		{
 			yyVAL.chordOption = &ast.ChordOption{
 				IsAugmented:  yyDollar[1].augmented,
@@ -707,142 +720,142 @@ yydefault:
 				Accidentaled: yyDollar[9].accidentaled,
 			}
 		}
-	case 29:
-		yyDollar = yyS[yypt-0 : yypt+1]
-//line cc/crd.y:193
-		{
-			yyVAL.augmented = false
-		}
-	case 30:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line cc/crd.y:194
-		{
-			yyVAL.augmented = true
-		}
 	case 31:
-		yyDollar = yyS[yypt-0 : yypt+1]
-//line cc/crd.y:197
-		{
-			yyVAL.diminished = false
-		}
-	case 32:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line cc/crd.y:198
-		{
-			yyVAL.diminished = true
-		}
-	case 33:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:201
 		{
-			yyVAL.minor = false
+			yyVAL.augmented = false
 		}
-	case 34:
+	case 32:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:202
 		{
-			yyVAL.minor = true
+			yyVAL.augmented = true
 		}
-	case 35:
+	case 33:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:205
 		{
-			yyVAL.major = false
+			yyVAL.diminished = false
 		}
-	case 36:
+	case 34:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:206
 		{
-			yyVAL.major = true
+			yyVAL.diminished = true
 		}
-	case 37:
+	case 35:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:209
 		{
-			yyVAL.seventh = false
+			yyVAL.minor = false
 		}
-	case 38:
+	case 36:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:210
 		{
-			yyVAL.seventh = true
+			yyVAL.minor = true
 		}
-	case 39:
+	case 37:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:213
 		{
-			yyVAL.sixth = false
+			yyVAL.major = false
 		}
-	case 40:
+	case 38:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:214
 		{
-			yyVAL.sixth = true
+			yyVAL.major = true
 		}
-	case 41:
+	case 39:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:217
 		{
-			yyVAL.suspended = false
+			yyVAL.seventh = false
 		}
-	case 42:
+	case 40:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:218
 		{
-			yyVAL.suspended = true
+			yyVAL.seventh = true
 		}
-	case 43:
+	case 41:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:221
 		{
-			yyVAL.forth = false
+			yyVAL.sixth = false
 		}
-	case 44:
+	case 42:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:222
 		{
-			yyVAL.forth = true
+			yyVAL.sixth = true
 		}
-	case 45:
+	case 43:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:225
 		{
-			yyVAL.accidentaled = 0
+			yyVAL.suspended = false
 		}
-	case 46:
-		yyDollar = yyS[yypt-2 : yypt+1]
+	case 44:
+		yyDollar = yyS[yypt-1 : yypt+1]
 //line cc/crd.y:226
 		{
-			yyVAL.accidentaled = yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
+			yyVAL.suspended = true
 		}
-	case 47:
-		yyDollar = yyS[yypt-2 : yypt+1]
+	case 45:
+		yyDollar = yyS[yypt-0 : yypt+1]
 //line cc/crd.y:229
 		{
-			yyVAL.accidentaled = yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
+			yyVAL.forth = false
+		}
+	case 46:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line cc/crd.y:230
+		{
+			yyVAL.forth = true
+		}
+	case 47:
+		yyDollar = yyS[yypt-0 : yypt+1]
+//line cc/crd.y:233
+		{
+			yyVAL.accidentaled = 0
 		}
 	case 48:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line cc/crd.y:232
+//line cc/crd.y:234
 		{
-			yyVAL.accidentaled = -yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
+			yyVAL.accidentaled = yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
 		}
 	case 49:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line cc/crd.y:235
+//line cc/crd.y:237
+		{
+			yyVAL.accidentaled = yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
+		}
+	case 50:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line cc/crd.y:240
 		{
 			yyVAL.accidentaled = -yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
 		}
-	case 50:
+	case 51:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line cc/crd.y:243
+		{
+			yyVAL.accidentaled = -yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
+		}
+	case 52:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line cc/crd.y:240
+//line cc/crd.y:248
 		{
 			i := yylex.(Lexer).ParseInt(yyDollar[2].token.Value())
 			yyVAL.value = note.NewValue(new(big.Rat).SetInt64(int64(i)))
 		}
-	case 51:
+	case 53:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line cc/crd.y:244
+//line cc/crd.y:252
 		{
 			l := yylex.(Lexer)
 			x := l.ParseInt(yyDollar[2].token.Value())

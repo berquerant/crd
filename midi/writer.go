@@ -164,8 +164,11 @@ func (s *astWriter) WriteNode(node ast.Node) {
 	case *ast.Rest:
 		s.w.Rest(node.Value)
 	case *ast.Chord:
-		t := fmt.Sprintf("%s%s", node.ChordNote, node.ChordOption)
-		s.w.Text(t)
+		if node.ChordBase != nil {
+			s.w.Text(fmt.Sprintf("%s%son%s", node.ChordNote, node.ChordOption, node.ChordBase))
+		} else {
+			s.w.Text(fmt.Sprintf("%s%s", node.ChordNote, node.ChordOption))
+		}
 		s.w.Append(node.Semitones(), node.Value)
 	default:
 		logger.Get().Warn("[WriteNode] unknown node %s", node)

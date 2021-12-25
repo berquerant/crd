@@ -28,7 +28,7 @@ The node types are below:
   Key
 
 Chord is a musical chord.
-A string formatted like NOTE OPTION [VALUE].
+A string formatted like NOTE OPTION ON [VALUE].
 
 NOTE is a note name, C, D#, Gb, ...
 VALUE ia a relative note value, for example 1 means a whole note, 1/2 means a half note.
@@ -47,6 +47,10 @@ OPTION is a chord option, like m (minor). Available options are below:
   6    add sixth
   m6   add minor sixth
   sus4 suspended forth
+
+ON is an optional base note.
+A string formatted like / NOTE.
+For example, /F.
 
 Rest is a musical rest.
 A string formatted like R [VALUE].

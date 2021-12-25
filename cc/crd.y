@@ -15,6 +15,7 @@ import (
   token Token
   chordNote *ast.ChordNote
   chordOption *ast.ChordOption
+  chordBase *ast.ChordBase
   value note.Value
   name note.Name
   augmented bool
@@ -37,6 +38,7 @@ import (
 %type <value> value
 %type <chordNote>  chord_note
 %type <chordOption> chord_option
+%type <chordBase> chord_base
 %type <name> name
 %type <accidental> accidental
 %type <augmented> augmented
@@ -135,21 +137,19 @@ rest:
   }
 
 chord:
-  chord_note chord_option value {
+  chord_note chord_option chord_base value {
     $$ = &ast.Chord{
       ChordNote: $1,
       ChordOption: $2,
-      Value: $3,
+      ChordBase: $3,
+      Value: $4,
     }
   }
 
 chord_note:
   name accidental {
-    $$ = &ast.ChordNote{
-      Name: $1,
-      Octave: note.Octave(4),
-      Accidental: $2,
-    }
+    n := note.NewSPN(note.NewNote($1, $2), note.Octave(4))
+    $$ = &ast.ChordNote{SPN: n}
   }
 
 name:
@@ -165,6 +165,14 @@ accidental:
   { $$ = note.Natural }
   | SHARP { $$ = note.Sharp }
   | FLAT { $$ = note.Flat }
+
+chord_base:
+  { $$ = nil}
+  | SLASH name accidental {
+    $$ = &ast.ChordBase{
+      Note: note.NewNote($2, $3),
+    }
+  }
 
 chord_option:
   augmented

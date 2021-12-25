@@ -1,6 +1,7 @@
 package note
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"strings"
@@ -153,6 +154,12 @@ func (s *note) String() string         { return fmt.Sprintf("%s%s", s.name, s.ac
 func (s *note) Equal(other Note) bool {
 	return s.Name() == other.Name() && s.Accidental() == other.Accidental()
 }
+func (s *note) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"name":       s.name,
+		"accidental": s.accidental,
+	})
+}
 
 type Octave int
 
@@ -162,6 +169,10 @@ type SPN interface {
 	Note() Note
 	Semitone() Semitone
 	Equal(other SPN) bool
+	// LowerBound returns the highest SPN with target that is lower than self.
+	LowerBound(target Note) SPN
+	// UpperBound returns the lowest SPN with target that is higher than self.
+	UpperBound(target Note) SPN
 }
 
 type spn struct {
@@ -180,6 +191,40 @@ func (s *spn) Octave() Octave { return s.octave }
 func (s *spn) Note() Note     { return s.note }
 func (s *spn) Equal(other SPN) bool {
 	return s.Octave() == other.Octave() && s.Note().Equal(other.Note())
+}
+func (s *spn) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"octave": s.octave,
+		"note":   s.note,
+	})
+}
+
+func (s *spn) UpperBound(target Note) SPN {
+	var (
+		i     Octave = 9 // from midi highest octave
+		bound        = s.Semitone()
+	)
+	for {
+		x := NewSPN(target, i-1)
+		if x.Semitone() <= bound {
+			return NewSPN(target, i)
+		}
+		i--
+	}
+}
+
+func (s *spn) LowerBound(target Note) SPN {
+	var (
+		i     Octave
+		bound = s.Semitone()
+	)
+	for {
+		x := NewSPN(target, i+1)
+		if x.Semitone() >= bound {
+			return NewSPN(target, i)
+		}
+		i++
+	}
 }
 
 // Semitone returns a number of semitones when C0 is 0.
@@ -276,4 +321,11 @@ func (s *key) String() string {
 		b.WriteString("major")
 	}
 	return b.String()
+}
+func (s *key) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"name":       s.Name,
+		"accidental": s.accidental,
+		"isMinor":    s.isMinor,
+	})
 }

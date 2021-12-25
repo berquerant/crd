@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -40,13 +39,6 @@ func (s *Key) Equal(other Node) bool {
 }
 
 func (s *Key) String() string { return fmt.Sprintf("key[%s]", s.Key) }
-func (s *Key) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"Name":       s.Key.Name(),
-		"Accidental": s.Key.Accidental(),
-		"IsMinor":    s.Key.IsMinor(),
-	})
-}
 
 type Tempo struct {
 	BPM int
@@ -91,6 +83,7 @@ type Chord struct {
 	ChordNote   *ChordNote
 	ChordOption *ChordOption
 	Value       note.Value
+	ChordBase   *ChordBase
 }
 
 func (s *Chord) Semitones() []note.Semitone {
@@ -99,43 +92,68 @@ func (s *Chord) Semitones() []note.Semitone {
 		return nil
 	}
 	v := c.SPNs(s.ChordNote.Semitone().SPN())
-	u := make([]note.Semitone, len(v))
+	u := make([]note.Semitone, len(v)+1)
+	u[0] = s.base().Semitone()
 	for i, x := range v {
-		u[i] = x.Semitone()
+		u[i+1] = x.Semitone()
 	}
 	return u
 }
 
-func (s *Chord) String() string { return fmt.Sprintf("%s%s[%s]", s.ChordNote, s.ChordOption, s.Value) }
+func (s *Chord) base() note.SPN {
+	n := s.ChordNote.Semitone().SPN()
+	if s.ChordBase == nil {
+		return n.LowerBound(s.ChordNote.SPN.Note())
+	}
+	return n.LowerBound(s.ChordBase.Note)
+}
+
+func (s *Chord) String() string {
+	if s.ChordBase != nil {
+		return fmt.Sprintf("%s%s/%s[%s]", s.ChordNote, s.ChordOption, s.ChordBase, s.Value)
+	}
+	return fmt.Sprintf("%s%s[%s]", s.ChordNote, s.ChordOption, s.Value)
+}
 
 func (s *Chord) Equal(other Node) bool {
 	if x, ok := other.(*Chord); ok {
-		return s.ChordNote.Equal(x.ChordNote) && s.ChordOption.Equal(x.ChordOption) && s.Value.Equal(x.Value)
+		return s.ChordNote.Equal(x.ChordNote) && s.ChordOption.Equal(x.ChordOption) && s.Value.Equal(x.Value) && s.ChordBase.Equal(x.ChordBase)
 	}
 	return false
 }
 
-type ChordNote struct {
-	Name       note.Name
-	Octave     note.Octave
-	Accidental note.Accidental
+type ChordBase struct {
+	Note note.Note
 }
 
-func (s *ChordNote) Semitone() note.Semitone {
-	return note.NewSPN(note.NewNote(s.Name, s.Accidental), s.Octave).Semitone()
+func (s *ChordBase) String() string {
+	if s.Note.Accidental() == note.Natural {
+		return s.Note.Name().String()
+	}
+	return fmt.Sprintf("%s%s", s.Note.Name(), s.Note.Accidental())
 }
+func (s *ChordBase) Equal(other *ChordBase) bool {
+	if s == nil {
+		return other == nil
+	}
+	return s.Note.Equal(other.Note)
+}
+
+type ChordNote struct {
+	SPN note.SPN
+}
+
+func (s *ChordNote) Semitone() note.Semitone { return s.SPN.Semitone() }
 
 // TODO: apply octave
 func (s *ChordNote) String() string {
-	if s.Accidental == note.Natural {
-		return s.Name.String()
+	if s.SPN.Note().Accidental() == note.Natural {
+		return s.SPN.Note().Name().String()
 	}
-	return fmt.Sprintf("%s%s", s.Name, s.Accidental)
+	return fmt.Sprintf("%s%s", s.SPN.Note().Name(), s.SPN.Note().Accidental())
 }
 
-func (s *ChordNote) Equal(other *ChordNote) bool {
-	return s.Name == other.Name && s.Octave == other.Octave && s.Accidental == other.Accidental
-}
+func (s *ChordNote) Equal(other *ChordNote) bool { return s.SPN.Equal(other.SPN) }
 
 type ChordOption struct {
 	IsMajor      bool

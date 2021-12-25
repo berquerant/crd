@@ -25,8 +25,7 @@ func TestParse(t *testing.T) {
 				NodeList: []ast.Node{
 					&ast.Chord{
 						ChordNote: &ast.ChordNote{
-							Name:   note.C,
-							Octave: 4,
+							SPN: note.NewSPN(note.NewNote(note.C, note.Natural), 4),
 						},
 						ChordOption: &ast.ChordOption{},
 						Value:       note.NewValue(big.NewRat(1, 1)),
@@ -52,9 +51,7 @@ func TestParse(t *testing.T) {
 				NodeList: []ast.Node{
 					&ast.Chord{
 						ChordNote: &ast.ChordNote{
-							Name:       note.C,
-							Octave:     4,
-							Accidental: note.Sharp,
+							SPN: note.NewSPN(note.NewNote(note.C, note.Sharp), 4),
 						},
 						ChordOption: &ast.ChordOption{},
 						Value:       note.NewValue(big.NewRat(1, 4)),
@@ -64,9 +61,7 @@ func TestParse(t *testing.T) {
 					},
 					&ast.Chord{
 						ChordNote: &ast.ChordNote{
-							Name:       note.E,
-							Octave:     4,
-							Accidental: note.Flat,
+							SPN: note.NewSPN(note.NewNote(note.E, note.Flat), 4),
 						},
 						ChordOption: &ast.ChordOption{},
 						Value:       note.NewValue(big.NewRat(1, 2)),
@@ -81,8 +76,7 @@ func TestParse(t *testing.T) {
 				NodeList: []ast.Node{
 					&ast.Chord{
 						ChordNote: &ast.ChordNote{
-							Name:   note.F,
-							Octave: 4,
+							SPN: note.NewSPN(note.NewNote(note.F, note.Natural), 4),
 						},
 						ChordOption: &ast.ChordOption{
 							IsMinor:      true,
@@ -128,6 +122,26 @@ func TestParse(t *testing.T) {
 							note.Flat,
 							true,
 						),
+					},
+				},
+			},
+		},
+		{
+			name:  "on",
+			input: "G7/F[1]",
+			want: &ast.Score{
+				NodeList: []ast.Node{
+					&ast.Chord{
+						ChordNote: &ast.ChordNote{
+							SPN: note.NewSPN(note.NewNote(note.G, note.Natural), 4),
+						},
+						ChordOption: &ast.ChordOption{
+							IsSeventh: true,
+						},
+						ChordBase: &ast.ChordBase{
+							Note: note.NewNote(note.F, note.Natural),
+						},
+						Value: note.NewValue(big.NewRat(1, 1)),
 					},
 				},
 			},
