@@ -56,7 +56,7 @@ func (s *Tempo) String() string { return fmt.Sprintf("tempo[%d]", s.BPM) }
 
 func (s *Tempo) Equal(other Node) bool {
 	if x, ok := other.(*Tempo); ok {
-		return x.BPM == x.BPM
+		return s.BPM == x.BPM
 	}
 	return false
 }
