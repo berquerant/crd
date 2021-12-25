@@ -12,6 +12,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	defaultBPM   = 120
+	defaultMeter = "4/4"
+)
+
 var midiCommand = &cobra.Command{
 	Use:     "midi",
 	Short:   "Generate a midi file.",
@@ -38,8 +43,12 @@ var midiCommand = &cobra.Command{
 		}
 		// generate midi operations based on AST
 		w := midi.NewASTWriter(midi.NewWriter())
-		w.Writer().BPM(bpm)
-		w.Writer().Meter(mn, md)
+		if bpm != defaultBPM {
+			w.Writer().BPM(bpm)
+		}
+		if meter != defaultMeter {
+			w.Writer().Meter(mn, md)
+		}
 		for _, n := range lexer.Result().NodeList {
 			w.WriteNode(n)
 		}
@@ -50,8 +59,8 @@ var midiCommand = &cobra.Command{
 
 func init() {
 	midiCommand.Flags().StringP("out", "o", "crd.out.mid", "Output filepath.")
-	midiCommand.Flags().IntP("bpm", "b", 100, "BPM.")
-	midiCommand.Flags().StringP("meter", "m", "4/4", "Time signature.")
+	midiCommand.Flags().IntP("bpm", "b", defaultBPM, "BPM.")
+	midiCommand.Flags().StringP("meter", "m", defaultMeter, "Time signature.")
 	rootCommand.AddCommand(midiCommand)
 }
 

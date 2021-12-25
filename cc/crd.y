@@ -27,11 +27,13 @@ import (
   forth bool
   accidental note.Accidental
   accidentaled int
+  keyMinor bool
+  key note.Key
 }
 
 %type <score> score
 %type <nodeList> node_list
-%type <node> node rest chord
+%type <node> node rest chord tempo meter key
 %type <value> value
 %type <chordNote>  chord_note
 %type <chordOption> chord_option
@@ -46,6 +48,7 @@ import (
 %type <suspended> suspended
 %type <forth> forth
 %type <accidentaled> accidentaled
+%type <keyMinor> key_major_minor
 
 %token <token> REST
 %token <token> MINOR
@@ -71,6 +74,9 @@ import (
 %token <token> G
 %token <token> A
 %token <token> B
+%token <token> TEMPO
+%token <token> METER
+%token <token> KEY
 
 %%
 
@@ -90,7 +96,38 @@ node_list:
   }
 
 node:
-  rest | chord
+  rest | chord | tempo | meter | key
+
+key:
+  KEY LBRA name accidental key_major_minor RBRA {
+    $$ = &ast.Key{
+      Key: note.NewKey($3, $4, $5),
+    }
+  }
+
+key_major_minor:
+  { $$ = false }
+  | MAJOR { $$ = false }
+  | MINOR { $$ = true }
+
+tempo:
+  TEMPO LBRA INT RBRA {
+    bpm := yylex.(Lexer).ParseInt($3.Value())
+    $$ = &ast.Tempo{
+      BPM: bpm,
+    }
+  }
+
+meter:
+  METER LBRA INT SLASH INT RBRA {
+    l := yylex.(Lexer)
+    n := l.ParseUint8($3.Value())
+    d := l.ParseUint8($5.Value())
+    $$ = &ast.Meter{
+      Num: n,
+      Denom: d,
+    }
+  }
 
 rest:
   REST value {

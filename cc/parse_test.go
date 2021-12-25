@@ -94,6 +94,44 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:  "meter",
+			input: "meter[7/8]",
+			want: &ast.Score{
+				NodeList: []ast.Node{
+					&ast.Meter{
+						Num:   7,
+						Denom: 8,
+					},
+				},
+			},
+		},
+		{
+			name:  "tempo",
+			input: "tempo[150]",
+			want: &ast.Score{
+				NodeList: []ast.Node{
+					&ast.Tempo{
+						BPM: 150,
+					},
+				},
+			},
+		},
+		{
+			name:  "key",
+			input: "key[Dbminor]",
+			want: &ast.Score{
+				NodeList: []ast.Node{
+					&ast.Key{
+						Key: note.NewKey(
+							note.D,
+							note.Flat,
+							true,
+						),
+					},
+				},
+			},
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

@@ -27,6 +27,8 @@ type (
 		Append(tones []note.Semitone, value note.Value)
 		// Rest appends an operation that adds a rest.
 		Rest(value note.Value)
+		// Key appends an operation that adds key change.
+		Key(name note.Name, accidental note.Accidental, isMinor bool)
 		// Operations returns the accumulated operations.
 		Operations() []Operation
 	}
@@ -73,6 +75,14 @@ func (*writer) noteNumber(tone note.Semitone) uint8 {
 	center := note.NewSPN(note.NewNote(note.C, note.Natural), 4)
 	diff := center.Semitone() - 60
 	return uint8(tone - diff)
+}
+
+func (s *writer) Key(name note.Name, accidental note.Accidental, isMinor bool) {
+	k := getKey(name, accidental, isMinor)()
+	s.add(func(w *mw.SMF) error {
+		logger.Get().Debug("[Key] %s%s minor = %s", name, accidental, isMinor)
+		return mw.Key(w, k)
+	})
 }
 
 func (s *writer) Rest(value note.Value) {
@@ -143,15 +153,22 @@ func NewASTWriter(w Writer) ASTWriter {
 }
 
 func (s *astWriter) WriteNode(node ast.Node) {
+	logger.Get().Debug("[WriteNode] %s", node)
 	switch node := node.(type) {
+	case *ast.Key:
+		s.w.Key(node.Key.Name(), node.Key.Accidental(), node.Key.IsMinor())
+	case *ast.Meter:
+		s.w.Meter(node.Num, node.Denom)
+	case *ast.Tempo:
+		s.w.BPM(node.BPM)
 	case *ast.Rest:
-		logger.Get().Debug("[WriteNode] %s", node)
 		s.w.Rest(node.Value)
 	case *ast.Chord:
 		t := fmt.Sprintf("%s%s", node.ChordNote, node.ChordOption)
-		logger.Get().Debug("[WriteNode] %s", t)
 		s.w.Text(t)
 		s.w.Append(node.Semitones(), node.Value)
+	default:
+		logger.Get().Warn("[WriteNode] unknown node %s", node)
 	}
 }
 

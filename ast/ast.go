@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -10,7 +11,6 @@ import (
 
 type Node interface {
 	IsNode()
-	Semitones() []note.Semitone
 	Equal(other Node) bool
 }
 
@@ -26,14 +26,59 @@ func (s *Score) String() string {
 	return strings.Join(v, " ")
 }
 
-//go:generate marker -method IsNode -type Rest,Chord -output ast_marker_generated.go
+//go:generate marker -method IsNode -type Key,Tempo,Meter,Rest,Chord -output ast_marker_generated.go
+
+type Key struct {
+	Key note.Key
+}
+
+func (s *Key) Equal(other Node) bool {
+	if x, ok := other.(*Key); ok {
+		return s.Key.Equal(x.Key)
+	}
+	return false
+}
+
+func (s *Key) String() string { return fmt.Sprintf("key[%s]", s.Key) }
+func (s *Key) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"Name":       s.Key.Name(),
+		"Accidental": s.Key.Accidental(),
+		"IsMinor":    s.Key.IsMinor(),
+	})
+}
+
+type Tempo struct {
+	BPM int
+}
+
+func (s *Tempo) String() string { return fmt.Sprintf("tempo[%d]", s.BPM) }
+
+func (s *Tempo) Equal(other Node) bool {
+	if x, ok := other.(*Tempo); ok {
+		return x.BPM == x.BPM
+	}
+	return false
+}
+
+type Meter struct {
+	Num, Denom uint8
+}
+
+func (s *Meter) String() string { return fmt.Sprintf("meter[%d/%d]", s.Num, s.Denom) }
+
+func (s *Meter) Equal(other Node) bool {
+	if x, ok := other.(*Meter); ok {
+		return s.Num == x.Num && s.Denom == x.Denom
+	}
+	return false
+}
 
 type Rest struct {
 	Value note.Value
 }
 
-func (s *Rest) Semitones() []note.Semitone { return nil }
-func (s *Rest) String() string             { return fmt.Sprintf("R[%s]", s.Value) }
+func (s *Rest) String() string { return fmt.Sprintf("R[%s]", s.Value) }
 
 func (s *Rest) Equal(other Node) bool {
 	if x, ok := other.(*Rest); ok {

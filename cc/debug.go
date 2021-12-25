@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/berquerant/crd/ast"
 	"github.com/berquerant/crd/logger"
 )
 
@@ -71,11 +72,16 @@ func (s *Debugger) Semitones() {
 		return
 	}
 	for _, n := range s.lexer.Result().NodeList {
-		tones := n.Semitones()
-		v := make([]string, len(tones))
-		for i, x := range tones {
-			v[i] = strconv.Itoa(int(x))
+		switch n := n.(type) {
+		case *ast.Chord:
+			tones := n.Semitones()
+			v := make([]string, len(tones))
+			for i, x := range tones {
+				v[i] = strconv.Itoa(int(x))
+			}
+			fmt.Printf("%s\t%s\n", n, strings.Join(v, " "))
+		default:
+			fmt.Println(n)
 		}
-		fmt.Printf("%s\t%s\n", n, strings.Join(v, " "))
 	}
 }

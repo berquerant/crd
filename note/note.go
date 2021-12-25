@@ -3,6 +3,7 @@ package note
 import (
 	"fmt"
 	"math/big"
+	"strings"
 )
 
 type Accidental int
@@ -236,3 +237,43 @@ func (s *beat) Value() Value {
 func (s *beat) Raw() *big.Rat         { return s.Rat }
 func (s *beat) String() string        { return s.Rat.RatString() }
 func (s *beat) Equal(other Beat) bool { return s.Raw().RatString() == other.Raw().RatString() }
+
+// Key represents a musical key.
+type Key interface {
+	Name() Name
+	Accidental() Accidental
+	IsMinor() bool
+	Equal(other Key) bool
+}
+
+func NewKey(name Name, accidental Accidental, isMinor bool) Key {
+	return &key{
+		name:       name,
+		accidental: accidental,
+		isMinor:    isMinor,
+	}
+}
+
+type key struct {
+	name       Name
+	accidental Accidental
+	isMinor    bool
+}
+
+func (s *key) Name() Name             { return s.name }
+func (s *key) Accidental() Accidental { return s.accidental }
+func (s *key) IsMinor() bool          { return s.isMinor }
+func (s *key) Equal(other Key) bool {
+	return s.Name() == other.Name() && s.Accidental() == other.Accidental() && s.IsMinor() == other.IsMinor()
+}
+func (s *key) String() string {
+	var b strings.Builder
+	b.WriteString(s.name.String())
+	b.WriteString(s.accidental.String())
+	if s.isMinor {
+		b.WriteString("minor")
+	} else {
+		b.WriteString("major")
+	}
+	return b.String()
+}

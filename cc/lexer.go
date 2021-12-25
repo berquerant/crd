@@ -30,6 +30,9 @@ type Lexer interface {
 	// ParseInt parses a string as an integer.
 	// Returns 0 and reports the error if failed.
 	ParseInt(x string) int
+	// ParseUint8 parses a strng as an uint8.
+	// Returns 0 and reports the error if failed.
+	ParseUint8(x string) uint8
 
 	/* Implements yyLexer. */
 	Lex(lval *yySymType) int
@@ -83,7 +86,7 @@ func (s *lexer) Scan() int {
 		s.next()
 		return REST
 	case '[':
-		s.expectInt = true // for reading note value
+		s.setExpectInt(true) // for reading note value
 		s.next()
 		return LBRA
 	case ']':
@@ -101,7 +104,7 @@ func (s *lexer) Scan() int {
 			s.ResetBuffer()
 			return s.Scan()
 		default:
-			s.expectInt = true
+			s.setExpectInt(true)
 			return SLASH
 		}
 	case 'b', '♭':
@@ -111,17 +114,17 @@ func (s *lexer) Scan() int {
 		s.next()
 		return SHARP
 	case '+':
-		s.expectInt = true // for reading accidental
+		s.setExpectInt(true) // for reading accidental
 		s.next()
 		return PLUS
 	case '-':
-		s.expectInt = true // for reading accidental
+		s.setExpectInt(true) // for reading accidental
 		s.next()
 		return MINUS
 	}
 	if s.scanDigits() {
 		if s.expectInt {
-			s.expectInt = false
+			s.setExpectInt(false)
 			return INT
 		}
 		/* forth, sixth and seventh preceed the note value and accidentaled (added note or chord accidental) in this repository */
@@ -140,6 +143,11 @@ func (s *lexer) Scan() int {
 	return s.scanIdent()
 }
 
+func (s *lexer) setExpectInt(v bool) {
+	s.debugf("[expectInt] %v", v)
+	s.expectInt = v
+}
+
 func (*lexer) isAlpha(r rune) bool { return 'a' <= r && r <= 'z' || 'A' <= r && r <= 'Z' }
 func (*lexer) isDigit(r rune) bool { return '0' <= r && r <= '9' }
 
@@ -151,15 +159,35 @@ func (s *lexer) scanIdent() int {
 		s.next()
 		switch s.Buffer() {
 		case "m":
+			switch s.Peek() {
+			case 'a', 'e', 'i': // for maj, major, minor, meter
+				continue
+			default:
+				return MINOR
+			}
+		case "minor":
 			return MINOR
-		case "M", "maj":
+		case "meter":
+			return METER
+		case "M", "major":
 			return MAJOR
+		case "maj":
+			switch s.Peek() {
+			case 'o':
+				continue // for major
+			default:
+				return MAJOR
+			}
 		case "aug":
 			return AUGMENTED
 		case "dim":
 			return DIMINISHED
 		case "sus":
 			return SUSPENDED
+		case "tempo":
+			return TEMPO
+		case "key":
+			return KEY
 		}
 	}
 	s.errorf("unknown ident %s", s.Buffer())
@@ -205,6 +233,15 @@ func (s *lexer) ParseInt(x string) int {
 		return 0
 	}
 	return i
+}
+
+func (s *lexer) ParseUint8(x string) uint8 {
+	u, err := strconv.ParseUint(x, 10, 8)
+	if err != nil {
+		s.errorf("cannot parse %s as uint8", x)
+		return 0
+	}
+	return uint8(u)
 }
 
 func (s *lexer) Discard() rune {
@@ -260,6 +297,7 @@ func (s *lexer) Lex(lval *yySymType) int {
 	t := s.Scan()
 	v := s.Buffer()
 	lval.token = NewToken(t, v)
+	s.debugf("[Lex] %s", lval.token)
 	s.ResetBuffer()
 	return t
 }
