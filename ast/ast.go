@@ -25,7 +25,25 @@ func (s *Score) String() string {
 	return strings.Join(v, " ")
 }
 
-//go:generate marker -method IsNode -type Instrument,Key,Tempo,Meter,Rest,Chord -output ast_marker_generated.go
+//go:generate marker -method IsNode -type Transposition,Instrument,Key,Tempo,Meter,Rest,Chord -output ast_marker_generated.go
+
+type Transposition struct {
+	Semitone note.Semitone
+}
+
+func (s *Transposition) Equal(other Node) bool {
+	if x, ok := other.(*Transposition); ok {
+		return s.Semitone == x.Semitone
+	}
+	return false
+}
+
+func (s *Transposition) String() string {
+	if s.Semitone >= 0 {
+		return fmt.Sprintf("trans[+%d]", s.Semitone)
+	}
+	return fmt.Sprintf("trans[-%d]", s.Semitone)
+}
 
 type Instrument struct {
 	Name string

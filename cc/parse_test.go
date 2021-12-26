@@ -157,6 +157,17 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:  "transposition",
+			input: "trans[2]",
+			want: &ast.Score{
+				NodeList: []ast.Node{
+					&ast.Transposition{
+						Semitone: 2,
+					},
+				},
+			},
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

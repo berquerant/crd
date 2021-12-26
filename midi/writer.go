@@ -151,7 +151,8 @@ type (
 	}
 
 	astWriter struct {
-		w Writer
+		w     Writer
+		trans note.Semitone
 	}
 )
 
@@ -164,10 +165,13 @@ func NewASTWriter(w Writer) ASTWriter {
 func (s *astWriter) WriteNode(node ast.Node) {
 	logger.Get().Debug("[WriteNode] %s", node)
 	switch node := node.(type) {
+	case *ast.Transposition:
+		logger.Get().Debug("[WriteNode] trans %d", node.Semitone)
+		s.trans = node.Semitone
 	case *ast.Instrument:
 		s.w.Instrument(node.Name)
 	case *ast.Key:
-		s.w.Key(node.Key.Name(), node.Key.Accidental(), node.Key.IsMinor())
+		s.writeKey(node)
 	case *ast.Meter:
 		s.w.Meter(node.Num, node.Denom)
 	case *ast.Tempo:
@@ -175,15 +179,50 @@ func (s *astWriter) WriteNode(node ast.Node) {
 	case *ast.Rest:
 		s.w.Rest(node.Value)
 	case *ast.Chord:
+		s.writeChord(node)
+	default:
+		logger.Get().Warn("[WriteNode] unknown node %s", node)
+	}
+}
+
+func (s *astWriter) writeChord(node *ast.Chord) {
+	if s.trans == 0 {
 		if node.ChordBase != nil {
 			s.w.Text(fmt.Sprintf("%s%son%s", node.ChordNote, node.ChordOption, node.ChordBase))
 		} else {
 			s.w.Text(fmt.Sprintf("%s%s", node.ChordNote, node.ChordOption))
 		}
 		s.w.Append(node.Semitones(), node.Value)
-	default:
-		logger.Get().Warn("[WriteNode] unknown node %s", node)
+		return
 	}
+	// transposition
+	n := &ast.ChordNote{
+		SPN: (node.ChordNote.SPN.Semitone() + s.trans).SPN(),
+	}
+	if node.ChordBase != nil {
+		s.w.Text(fmt.Sprintf("%s%son%s", n, node.ChordOption, &ast.ChordBase{
+			Note: (node.ChordBase.Note.Semitone() + s.trans).Note(),
+		}))
+	} else {
+		s.w.Text(fmt.Sprintf("%s%s", n, node.ChordOption))
+	}
+	v := node.Semitones()
+	t := make([]note.Semitone, len(v))
+	for i, x := range v {
+		t[i] = x + s.trans
+	}
+	s.w.Append(t, node.Value)
+}
+
+func (s *astWriter) writeKey(node *ast.Key) {
+	if s.trans == 0 {
+		s.w.Key(node.Key.Name(), node.Key.Accidental(), node.Key.IsMinor())
+		return
+	}
+	// transposition
+	n := note.NewNote(node.Key.Name(), node.Key.Accidental())
+	x := (n.Semitone() + s.trans).Note()
+	s.w.Key(x.Name(), x.Accidental(), node.Key.IsMinor())
 }
 
 func (s *astWriter) Writer() Writer { return s.w }

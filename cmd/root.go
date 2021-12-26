@@ -27,6 +27,7 @@ The node types are below:
   Tempo
   Key
   Instrument
+  Transposition
 
 Chord is a musical chord.
 A string formatted like NOTE OPTION ON [VALUE].
@@ -78,7 +79,11 @@ available values are below:
 
 Instrument is a midi instrument.
 A string formatted like inst["INSTRUMENT_NAME"].
-For example, inst["Acoustic Piano"]`,
+For example, inst["Acoustic Piano"]
+
+Transposition applies a transposition.
+A string formatted like trans[INT].
+For example, trans[3] means 3 semitones addition.`,
 		PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 			verbose, _ := cmd.Flags().GetInt("verbose")
 			if verbose < 1 {

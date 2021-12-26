@@ -6,15 +6,18 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/berquerant/crd/ast"
 	"github.com/berquerant/crd/cc"
 	"github.com/berquerant/crd/logger"
 	"github.com/berquerant/crd/midi"
+	"github.com/berquerant/crd/note"
 	"github.com/spf13/cobra"
 )
 
 const (
-	defaultBPM   = 120
-	defaultMeter = "4/4"
+	defaultBPM           = 120
+	defaultMeter         = "4/4"
+	defaultTransposition = 0
 )
 
 var midiCommand = &cobra.Command{
@@ -27,6 +30,7 @@ var midiCommand = &cobra.Command{
 			verbose, _ = cmd.Flags().GetInt("verbose")
 			meter, _   = cmd.Flags().GetString("meter")
 			bpm, _     = cmd.Flags().GetInt("bpm")
+			trans, _   = cmd.Flags().GetInt("trans")
 			out, _     = cmd.Flags().GetString("out")
 		)
 		mn, md, ok := parseMeter(meter)
@@ -49,6 +53,11 @@ var midiCommand = &cobra.Command{
 		if meter != defaultMeter {
 			w.Writer().Meter(mn, md)
 		}
+		if trans != defaultTransposition {
+			w.WriteNode(&ast.Transposition{
+				Semitone: note.Semitone(trans),
+			})
+		}
 		for _, n := range lexer.Result().NodeList {
 			w.WriteNode(n)
 		}
@@ -61,6 +70,7 @@ func init() {
 	midiCommand.Flags().StringP("out", "o", "crd.out.mid", "Output filepath.")
 	midiCommand.Flags().IntP("bpm", "b", defaultBPM, "BPM.")
 	midiCommand.Flags().StringP("meter", "m", defaultMeter, "Time signature.")
+	midiCommand.Flags().IntP("trans", "t", defaultTransposition, "Transposition")
 	rootCommand.AddCommand(midiCommand)
 }
 

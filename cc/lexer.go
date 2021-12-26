@@ -205,6 +205,8 @@ func (s *lexer) scanIdent() int {
 			return KEY
 		case "inst":
 			return INSTRUMENT
+		case "trans":
+			return TRANSPOSITION
 		}
 	}
 	s.errorf("unknown ident %s", s.Buffer())

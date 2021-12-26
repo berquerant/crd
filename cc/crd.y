@@ -30,11 +30,12 @@ import (
   accidentaled int
   keyMinor bool
   key note.Key
+  transpositionDiff note.Semitone
 }
 
 %type <score> score
 %type <nodeList> node_list
-%type <node> node rest chord tempo meter key instrument
+%type <node> node rest chord tempo meter key instrument transposition
 %type <value> value
 %type <chordNote>  chord_note
 %type <chordOption> chord_option
@@ -51,6 +52,7 @@ import (
 %type <forth> forth
 %type <accidentaled> accidentaled
 %type <keyMinor> key_major_minor
+%type <transpositionDiff> transposition_diff
 
 %token <token> REST
 %token <token> MINOR
@@ -81,6 +83,7 @@ import (
 %token <token> KEY
 %token <token> INSTRUMENT
 %token <token> STRING
+%token <token> TRANSPOSITION
 
 %%
 
@@ -100,7 +103,23 @@ node_list:
   }
 
 node:
-  rest | chord | tempo | meter | key | instrument
+  rest | chord | tempo | meter | key | instrument | transposition
+
+transposition:
+  TRANSPOSITION LBRA transposition_diff RBRA {
+    $$ = &ast.Transposition{Semitone: $3}
+  }
+
+transposition_diff:
+  INT {
+    $$ = note.Semitone(yylex.(Lexer).ParseInt($1.Value()))
+  }
+  | PLUS INT {
+    $$ = note.Semitone(yylex.(Lexer).ParseInt($2.Value()))
+  }
+  | MINUS INT {
+    $$ = note.Semitone(-yylex.(Lexer).ParseInt($2.Value()))
+  }
 
 instrument:
   INSTRUMENT LBRA STRING RBRA {

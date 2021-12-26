@@ -8,17 +8,32 @@ import (
 
 	"github.com/berquerant/crd/ast"
 	"github.com/berquerant/crd/logger"
+	"github.com/berquerant/crd/note"
 )
 
-func NewDebugger(lexer Lexer) *Debugger {
-	return &Debugger{
+func NewDebugger(lexer Lexer, opt ...DebuggerOption) *Debugger {
+	x := &Debugger{
 		lexer: lexer,
+	}
+	for _, o := range opt {
+		o(x)
+	}
+	return x
+}
+
+func WithTransposition(v note.Semitone) DebuggerOption {
+	return func(d *Debugger) {
+		d.transposition = v
 	}
 }
 
-type Debugger struct {
-	lexer Lexer
-}
+type (
+	DebuggerOption func(*Debugger)
+	Debugger       struct {
+		lexer         Lexer
+		transposition note.Semitone
+	}
+)
 
 // Lex prints the process of the lexical analysis.
 func (s *Debugger) Lex() {
@@ -73,13 +88,35 @@ func (s *Debugger) Semitones() {
 	}
 	for _, n := range s.lexer.Result().NodeList {
 		switch n := n.(type) {
+		case *ast.Key:
+			v := (n.Key.Name().Semitone().Sign(n.Key.Accidental()) + s.transposition).Note()
+			fmt.Println(&ast.Key{
+				Key: note.NewKey(v.Name(), v.Accidental(), n.Key.IsMinor()),
+			})
 		case *ast.Chord:
-			tones := n.Semitones()
+			var (
+				c = &ast.Chord{
+					ChordNote: &ast.ChordNote{
+						SPN: (n.ChordNote.SPN.Semitone() + s.transposition).SPN(),
+					},
+					ChordOption: n.ChordOption,
+					ChordBase: func() *ast.ChordBase {
+						if n.ChordBase == nil {
+							return nil
+						}
+						return &ast.ChordBase{
+							Note: (n.ChordBase.Note.Semitone() + s.transposition).Note(),
+						}
+					}(),
+					Value: n.Value,
+				}
+			)
+			tones := c.Semitones()
 			v := make([]string, len(tones))
 			for i, x := range tones {
 				v[i] = strconv.Itoa(int(x))
 			}
-			fmt.Printf("%s\t%s\n", n, strings.Join(v, " "))
+			fmt.Printf("%s\t%s\n", c, strings.Join(v, " "))
 		default:
 			fmt.Println(n)
 		}

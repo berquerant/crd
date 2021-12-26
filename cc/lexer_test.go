@@ -170,6 +170,17 @@ desc
 				cc.RBRA, "]",
 			),
 		},
+		{
+			name:  "transposition",
+			input: "trans[-1]",
+			want: newTokens(
+				cc.TRANSPOSITION, "trans",
+				cc.LBRA, "[",
+				cc.MINUS, "-",
+				cc.INT, "1",
+				cc.RBRA, "]",
+			),
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
