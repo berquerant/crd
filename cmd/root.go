@@ -9,7 +9,7 @@ var rootCommand = newRootCommand()
 
 func newRootCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:   "echo SCORE | crd COMMAND",
+		Use:   "crd",
 		Short: "Generate a midi file.",
 		Long: `Generate a midi file or print some info from stdin.
 
