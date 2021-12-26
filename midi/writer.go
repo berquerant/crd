@@ -94,13 +94,7 @@ func (s *writer) Key(name note.Name, accidental note.Accidental, isMinor bool) {
 	})
 }
 
-func (s *writer) Rest(value note.Value) {
-	f := s.forward(value)
-	s.add(func(w *mw.SMF) error {
-		_ = f(w)
-		return nil
-	})
-}
+func (s *writer) Rest(value note.Value) { s.add(s.forward(value)) }
 
 func (*writer) forward(value note.Value) Operation {
 	n := value.Raw().Num().Uint64()

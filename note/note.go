@@ -324,7 +324,7 @@ func (s *key) String() string {
 }
 func (s *key) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"name":       s.Name,
+		"name":       s.name,
 		"accidental": s.accidental,
 		"isMinor":    s.isMinor,
 	})
