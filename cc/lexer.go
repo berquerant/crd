@@ -141,6 +141,8 @@ func (s *lexer) Scan() int {
 			return SIXTH
 		case "7":
 			return SEVENTH
+		case "9":
+			return NINTH
 		default:
 			s.errorf("failed to read chord option")
 			return EOF
@@ -199,6 +201,8 @@ func (s *lexer) scanIdent() int {
 			return DIMINISHED
 		case "sus":
 			return SUSPENDED
+		case "add":
+			return ADDED
 		case "tempo":
 			return TEMPO
 		case "key":

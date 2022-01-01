@@ -181,6 +181,18 @@ desc
 				cc.RBRA, "]",
 			),
 		},
+		{
+			name:  "added",
+			input: "Cadd9[1]",
+			want: newTokens(
+				cc.C, "C",
+				cc.ADDED, "add",
+				cc.NINTH, "9",
+				cc.LBRA, "[",
+				cc.INT, "1",
+				cc.RBRA, "]",
+			),
+		},
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

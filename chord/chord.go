@@ -20,8 +20,10 @@ const (
 	AugmentedSeventh
 	AugmentedMajorSeventh
 	AddSixth
-	AddMinorSixth
+	MinorAddSixth
 	SuspendedForth
+	AddNinth
+	MinorAddNinth
 )
 
 // Semitones returns the components of the chord as a list of semitones.
@@ -53,10 +55,14 @@ func (s Chord) Semitones() []note.Semitone {
 		return []note.Semitone{0, 4, 8, 11}
 	case AddSixth:
 		return []note.Semitone{0, 4, 7, 9}
-	case AddMinorSixth:
+	case MinorAddSixth:
 		return []note.Semitone{0, 3, 7, 9}
 	case SuspendedForth:
 		return []note.Semitone{0, 5, 7}
+	case AddNinth:
+		return []note.Semitone{0, 4, 7, 14}
+	case MinorAddNinth:
+		return []note.Semitone{0, 3, 7, 14}
 	default:
 		panic("Unknown Chord!")
 	}

@@ -21,13 +21,15 @@ func _() {
 	_ = x[AugmentedSeventh-10]
 	_ = x[AugmentedMajorSeventh-11]
 	_ = x[AddSixth-12]
-	_ = x[AddMinorSixth-13]
+	_ = x[MinorAddSixth-13]
 	_ = x[SuspendedForth-14]
+	_ = x[AddNinth-15]
+	_ = x[MinorAddNinth-16]
 }
 
-const _Chord_name = "MajorTriadMinorTriadDiminishedTriadAugmentedTriadDominantSeventhMajorSeventhMinorSeventhMinorMajorSeventhDiminishedSeventhHalfDiminishedSeventhAugmentedSeventhAugmentedMajorSeventhAddSixthAddMinorSixthSuspendedForth"
+const _Chord_name = "MajorTriadMinorTriadDiminishedTriadAugmentedTriadDominantSeventhMajorSeventhMinorSeventhMinorMajorSeventhDiminishedSeventhHalfDiminishedSeventhAugmentedSeventhAugmentedMajorSeventhAddSixthMinorAddSixthSuspendedForthAddNinthMinorAddNinth"
 
-var _Chord_index = [...]uint8{0, 10, 20, 35, 49, 64, 76, 88, 105, 122, 143, 159, 180, 188, 201, 215}
+var _Chord_index = [...]uint8{0, 10, 20, 35, 49, 64, 76, 88, 105, 122, 143, 159, 180, 188, 201, 215, 223, 236}
 
 func (i Chord) String() string {
 	if i < 0 || i >= Chord(len(_Chord_index)-1) {

@@ -195,6 +195,8 @@ type ChordOption struct {
 	IsSixth      bool
 	IsSuspended  bool
 	IsForth      bool
+	IsAdded      bool
+	IsNinth      bool
 	Accidentaled int
 }
 
@@ -210,6 +212,8 @@ func (s *ChordOption) Equal(other *ChordOption) bool {
 		s.IsSixth == other.IsSixth &&
 		s.IsSuspended == other.IsSuspended &&
 		s.IsForth == other.IsForth &&
+		s.IsAdded == other.IsAdded &&
+		s.IsNinth == other.IsNinth &&
 		s.Accidentaled == other.Accidentaled
 }
 
@@ -271,11 +275,19 @@ var chordOptionToChord = []struct {
 	},
 	{
 		option: ChordOption{IsSixth: true, IsMinor: true},
-		name:   chord.AddMinorSixth,
+		name:   chord.MinorAddSixth,
 	},
 	{
 		option: ChordOption{IsSuspended: true, IsForth: true},
 		name:   chord.SuspendedForth,
+	},
+	{
+		option: ChordOption{IsNinth: true, IsAdded: true},
+		name:   chord.AddNinth,
+	},
+	{
+		option: ChordOption{IsNinth: true, IsAdded: true, IsMinor: true},
+		name:   chord.MinorAddNinth,
 	},
 }
 
@@ -308,6 +320,9 @@ func (s *ChordOption) String() string {
 	if s.IsSuspended {
 		write("sus")
 	}
+	if s.IsAdded {
+		write("add")
+	}
 	if s.IsForth {
 		write("4")
 	}
@@ -316,6 +331,9 @@ func (s *ChordOption) String() string {
 	}
 	if s.IsSeventh {
 		write("7")
+	}
+	if s.IsNinth {
+		write("9")
 	}
 	switch {
 	case s.Accidentaled > 0:

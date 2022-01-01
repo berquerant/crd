@@ -36,19 +36,21 @@ NOTE is a note name, C, D#, Gb, ...
 VALUE ia a relative note value, for example 1 means a whole note, 1/2 means a half note.
 OPTION is a chord option, like m (minor). Available options are below:
 
-  m    minor triad
-  aug  augmented triad
-  dim  diminished triad
-  7    dominant seventh
-  m7   minor seventh
-  M7   major seventh
-  mM7  minor major seventh
-  dim7 diminished seventh
-  m7-5 half diminished seventh
-  aug7 augmented seventh
-  6    add sixth
-  m6   add minor sixth
-  sus4 suspended forth
+  m     minor triad
+  aug   augmented triad
+  dim   diminished triad
+  7     dominant seventh
+  m7    minor seventh
+  M7    major seventh
+  mM7   minor major seventh
+  dim7  diminished seventh
+  m7-5  half diminished seventh
+  aug7  augmented seventh
+  6     added sixth
+  m6    minor added sixth
+  sus4  suspended forth
+  add9  added ninth
+  madd9 minor added ninth
 
 ON is an optional base note.
 A string formatted like / NOTE.

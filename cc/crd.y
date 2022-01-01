@@ -25,6 +25,8 @@ import (
   seventh bool
   sixth bool
   suspended bool
+  added bool
+  ninth bool
   forth bool
   accidental note.Accidental
   accidentaled int
@@ -49,6 +51,8 @@ import (
 %type <seventh> seventh
 %type <sixth> sixth
 %type <suspended> suspended
+%type <added> added
+%type <ninth> ninth
 %type <forth> forth
 %type <accidentaled> accidentaled
 %type <keyMinor> key_major_minor
@@ -62,6 +66,8 @@ import (
 %token <token> AUGMENTED
 %token <token> SIXTH
 %token <token> SUSPENDED
+%token <token> ADDED
+%token <token> NINTH
 %token <token> FORTH
 %token <token> MINUS
 %token <token> PLUS
@@ -211,6 +217,8 @@ chord_option:
   sixth
   suspended
   forth
+  added
+  ninth
   accidentaled {
     $$ = &ast.ChordOption{
       IsAugmented: $1,
@@ -221,7 +229,9 @@ chord_option:
       IsSixth: $6,
       IsSuspended: $7,
       IsForth: $8,
-      Accidentaled: $9,
+      IsAdded: $9,
+      IsNinth: $10,
+      Accidentaled: $11,
     }
   }
 
@@ -256,6 +266,14 @@ suspended:
 forth:
   { $$ = false }
   | FORTH { $$ = true }
+
+added:
+  { $$ = false }
+  | ADDED { $$ = true }
+
+ninth:
+  { $$ = false }
+  | NINTH { $$ = true }
 
 accidentaled:
   { $$ = 0 }
