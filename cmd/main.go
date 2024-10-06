@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"gitlab.com/gomidi/midi/v2"
-	_ "gitlab.com/gomidi/midi/v2/drivers/rtmididrv" // autoregisters driver
+	_ "gitlab.com/gomidi/midi/v2/drivers/testdrv" // autoregisters driver
 )
 
 func main() {
