@@ -3,7 +3,10 @@ module github.com/berquerant/crd
 go 1.23.0
 
 require (
-	github.com/go-task/task/v3 v3.39.0
+	github.com/berquerant/marker v0.2.1
+	github.com/berquerant/mkvisitor v0.4.0
+	github.com/berquerant/ybase v0.6.2
+	github.com/go-task/task/v3 v3.39.2
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	gitlab.com/gomidi/midi/v2 v2.2.10
@@ -16,9 +19,6 @@ require (
 	github.com/Ladicle/tabwriter v1.0.0 // indirect
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
-	github.com/berquerant/marker v0.2.1 // indirect
-	github.com/berquerant/mkvisitor v0.4.0 // indirect
-	github.com/berquerant/ybase v0.6.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/dominikbraun/graph v0.23.0 // indirect
