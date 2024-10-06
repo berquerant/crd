@@ -1,2 +1,4 @@
 dist/
-crd.output
+bin/
+tmp/
+*.output

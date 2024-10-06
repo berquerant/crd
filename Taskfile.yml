@@ -1,0 +1,35 @@
+version: '3'
+
+tasks:
+  default:
+    deps:
+      - lint
+      - test
+      - build
+  build:
+    cmds:
+      - go build -trimpath -v -o dist/crd ./cmd/
+  lint:
+    deps:
+      - vuln
+      - vet
+  test:
+    cmds:
+      - go test -v -cover -race ./...
+  vuln:
+    cmds:
+      - go run golang.org/x/vuln/cmd/govulncheck ./...
+  vet:
+    cmds:
+      - go vet ./...
+  generate:
+    # deps:
+    #   - clean-generated
+    cmds:
+      - go generate ./...
+  clean-generated:
+    cmds:
+      - find . -name "*_generated.go" -type f -delete
+  tidy:
+    cmds:
+      - go mod tidy -v

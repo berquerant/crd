@@ -1,0 +1,140 @@
+- name: MajorTriad
+  meta:
+    display: ""
+  attributes:
+    - Perfect1
+    - Major3
+    - Perfect5
+- name: MinorTriad
+  meta:
+    display: m
+  attributes:
+    - Perfect1
+    - Minor3
+    - Perfect5
+- name: DiminishedTriad
+  meta:
+    display: dim
+  attributes:
+    - Perfect1
+    - Minor3
+    - Diminished5
+- name: AugmentedTriad
+  meta:
+    display: aug
+  attributes:
+    - Perfect1
+    - Major3
+    - Augmented5
+- name: DominantSeventh
+  meta:
+    display: "7"
+  extends: MajorTriad
+  attributes:
+    - Minor7
+- name: MajorSeventh
+  meta:
+    display: "M7"
+  extends: MajorTriad
+  attributes:
+    - Major7
+- name: MajorSeventhAlias1
+  meta:
+    display: "maj7"
+  extends: MajorSeventh
+- name: MinorSeventh
+  meta:
+    display: "m7"
+  extends: MinorTriad
+  attributes:
+    - Minor7
+- name: MinorMajorSeventh
+  meta:
+    display: "mM7"
+  extends: MinorTriad
+  attributes:
+    - Major7
+- name: HalfDiminishedSeventh
+  meta:
+    display: "m7b5"
+  extends: DiminishedTriad
+  attributes:
+    - Minor7
+- name: DiminishedSeventh
+  meta:
+    display: "dim7"
+  extends: DiminishedTriad
+  attributes:
+    - Diminished7
+- name: AugmentedMajorSeventh
+  meta:
+    display: "augM7"
+  extends: AugmentedTriad
+  attributes:
+    - Major7
+- name: DominantNinth
+  meta:
+    display: "9"
+  extends: DominantSeventh
+  attributes:
+    - Major9
+- name: MinorMajorNinth
+  meta:
+    display: "mM9"
+  extends: MinorMajorSeventh
+  attributes:
+    - Major9
+- name: MinorNinth
+  meta:
+    display: "m9"
+  extends: MinorSeventh
+  attributes:
+    - Major9
+- name: MajorNinth
+  meta:
+    display: "M9"
+  extends: MajorSeventh
+  attributes:
+    - Major9
+- name: MajorNinthAlias1
+  meta:
+    display: "maj9"
+  extends: MajorNinth
+- name: SuspendedFourth
+  meta:
+    display: "sus4"
+  attributes:
+    - Perfect1
+    - Perfect4
+    - Perfect5
+- name: SeventhSuspendedFourth
+  meta:
+    display: "7sus4"
+  extends: SuspendedFourth
+  attributes:
+    - Minor7
+- name: Sixth
+  meta:
+    display: "6"
+  extends: MajorTriad
+  attributes:
+    - Major6
+- name: MinorSixth
+  meta:
+    display: "m6"
+  extends: MinorTriad
+  attributes:
+    - Major6
+- name: AddedNinth
+  meta:
+    display: "add9"
+  extends: MajorTriad
+  attributes:
+    - Major9
+- name: SuspendSecond
+  meta:
+    display: "sus2"
+  attributes:
+    - Perfect1
+    - Major2
+    - Perfect5

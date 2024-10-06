@@ -1,91 +1,45 @@
-package cmd
+package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
 
-	"github.com/berquerant/crd/ast"
-	"github.com/berquerant/crd/cc"
-	"github.com/berquerant/crd/logger"
-	"github.com/berquerant/crd/midi"
-	"github.com/berquerant/crd/note"
+	"github.com/berquerant/crd/midix"
 	"github.com/spf13/cobra"
 )
 
-const (
-	defaultBPM           = 120
-	defaultMeter         = "4/4"
-	defaultTransposition = 0
-)
+func init() {
+	rootCmd.AddCommand(midiCmd)
+	midiCmd.AddCommand(midiCmdPort)
+	midiCmdPort.AddCommand(midiCmdPortIn, midiCmdPortOut)
+}
 
-var midiCommand = &cobra.Command{
-	Use:     "midi",
-	Short:   "Generate a midi file.",
-	Long:    "Generate a midi file from stdin score.",
-	Example: "echo SCORE | crd midi [flags] -o FILE",
-	RunE: func(cmd *cobra.Command, _ []string) error {
-		var (
-			verbose, _ = cmd.Flags().GetInt("verbose")
-			meter, _   = cmd.Flags().GetString("meter")
-			bpm, _     = cmd.Flags().GetInt("bpm")
-			trans, _   = cmd.Flags().GetInt("trans")
-			out, _     = cmd.Flags().GetString("out")
-		)
-		mn, md, ok := parseMeter(meter)
-		if !ok {
-			return fmt.Errorf("invalid time signature %s", meter)
+var midiCmd = &cobra.Command{
+	Use:   "midi",
+	Short: `midi util`,
+}
+
+var midiCmdPort = &cobra.Command{
+	Use: "port",
+}
+
+var midiCmdPortOut = &cobra.Command{
+	Use:   "out",
+	Short: `show out ports`,
+	RunE: func(_ *cobra.Command, _ []string) error {
+		for _, x := range midix.GetOutPortNames() {
+			fmt.Println(x)
 		}
-		// parse input and construct AST
-		lexer := cc.NewLexer(os.Stdin)
-		lexer.Debug(verbose)
-		status := cc.Parse(lexer)
-		logger.Get().Info("parser exit with %d", status)
-		if err := lexer.Err(); err != nil {
-			return fmt.Errorf("parser got error %w", err)
-		}
-		// generate midi operations based on AST
-		w := midi.NewASTWriter(midi.NewWriter())
-		if bpm != defaultBPM {
-			w.Writer().BPM(bpm)
-		}
-		if meter != defaultMeter {
-			w.Writer().Meter(mn, md)
-		}
-		if trans != defaultTransposition {
-			w.WriteNode(&ast.Transposition{
-				Semitone: note.Semitone(trans),
-			})
-		}
-		for _, n := range lexer.Result().NodeList {
-			w.WriteNode(n)
-		}
-		// write midi file
-		return midi.NewFactory(out).WriteSMF(w.Writer().Operations())
+		return nil
 	},
 }
 
-func init() {
-	midiCommand.Flags().StringP("out", "o", "crd.out.mid", "Output filepath.")
-	midiCommand.Flags().IntP("bpm", "b", defaultBPM, "BPM.")
-	midiCommand.Flags().StringP("meter", "m", defaultMeter, "Time signature.")
-	midiCommand.Flags().IntP("trans", "t", defaultTransposition, "Transposition")
-	rootCommand.AddCommand(midiCommand)
-}
-
-func parseMeter(meter string) (uint8, uint8, bool) {
-	v := strings.Split(meter, "/")
-	if len(v) != 2 {
-		return 0, 0, false
-	}
-	x, err := strconv.Atoi(v[0])
-	if err != nil {
-		return 0, 0, false
-	}
-	y, err := strconv.Atoi(v[1])
-	if err != nil {
-		return 0, 0, false
-	}
-	return uint8(x), uint8(y), true
+var midiCmdPortIn = &cobra.Command{
+	Use:   "in",
+	Short: `show in ports`,
+	RunE: func(_ *cobra.Command, _ []string) error {
+		for _, x := range midix.GetInPortNames() {
+			fmt.Println(x)
+		}
+		return nil
+	},
 }

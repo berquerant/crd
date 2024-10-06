@@ -1,78 +1,57 @@
 package chord
 
-import "github.com/berquerant/crd/note"
+import (
+	_ "embed"
 
-//go:generate stringer -type Chord -output chord_stringer_generated.go
-
-type Chord int
-
-const (
-	MajorTriad Chord = iota
-	MinorTriad
-	DiminishedTriad
-	AugmentedTriad
-	DominantSeventh
-	MajorSeventh
-	MinorSeventh
-	MinorMajorSeventh
-	DiminishedSeventh
-	HalfDiminishedSeventh
-	AugmentedSeventh
-	AugmentedMajorSeventh
-	AddSixth
-	MinorAddSixth
-	SuspendedForth
-	AddNinth
-	MinorAddNinth
+	"github.com/berquerant/crd/errorx"
+	"github.com/berquerant/crd/logx"
+	"gopkg.in/yaml.v3"
 )
 
-// Semitones returns the components of the chord as a list of semitones.
-func (s Chord) Semitones() []note.Semitone {
-	switch s {
-	case MajorTriad:
-		return []note.Semitone{0, 4, 7}
-	case MinorTriad:
-		return []note.Semitone{0, 3, 7}
-	case DiminishedTriad:
-		return []note.Semitone{0, 3, 6}
-	case AugmentedTriad:
-		return []note.Semitone{0, 4, 8}
-	case DominantSeventh:
-		return []note.Semitone{0, 4, 7, 10}
-	case MajorSeventh:
-		return []note.Semitone{0, 4, 7, 11}
-	case MinorSeventh:
-		return []note.Semitone{0, 3, 7, 10}
-	case MinorMajorSeventh:
-		return []note.Semitone{0, 3, 7, 11}
-	case DiminishedSeventh:
-		return []note.Semitone{0, 3, 6, 9}
-	case HalfDiminishedSeventh:
-		return []note.Semitone{0, 3, 6, 10}
-	case AugmentedSeventh:
-		return []note.Semitone{0, 4, 8, 10}
-	case AugmentedMajorSeventh:
-		return []note.Semitone{0, 4, 8, 11}
-	case AddSixth:
-		return []note.Semitone{0, 4, 7, 9}
-	case MinorAddSixth:
-		return []note.Semitone{0, 3, 7, 9}
-	case SuspendedForth:
-		return []note.Semitone{0, 5, 7}
-	case AddNinth:
-		return []note.Semitone{0, 4, 7, 14}
-	case MinorAddNinth:
-		return []note.Semitone{0, 3, 7, 14}
-	default:
-		panic("Unknown Chord!")
-	}
+type Chord struct {
+	Name string   `yaml:"name"`
+	Meta Metadata `yaml:"meta"`
+	// attribute names
+	Attributes []string `yaml:"attributes,omitempty"`
+	// chord name
+	Extends string `yaml:"extends,omitempty"`
 }
 
-func (s Chord) SPNs(root note.SPN) []note.SPN {
-	semitones := s.Semitones()
-	spns := make([]note.SPN, len(semitones))
-	for i, st := range semitones {
-		spns[i] = (root.Semitone() + st).SPN()
+func (c Chord) validate() error {
+	if c.Name == "" {
+		return errorx.Invalid("Chord should have name")
 	}
-	return spns
+	if c.Meta.Display == "" && c.Name != "MajorTriad" {
+		return errorx.Invalid("Chord should have display name except major triad")
+	}
+	if len(c.Attributes) == 0 && c.Extends == "" {
+		return errorx.Invalid("Chord should have attributes or extends")
+	}
+	return nil
+}
+
+type Metadata struct {
+	Display string `yaml:"display"`
+}
+
+//go:embed chord.yml
+var basicChords []byte
+
+func BasicChords() []Chord {
+	chords, err := ParseChords(basicChords)
+	logx.PanicOnError(err)
+	return chords
+}
+
+func ParseChords(b []byte) ([]Chord, error) {
+	var chords []Chord
+	if err := yaml.Unmarshal(b, &chords); err != nil {
+		return nil, err
+	}
+	for _, c := range chords {
+		if err := c.validate(); err != nil {
+			return nil, err
+		}
+	}
+	return chords, nil
 }
