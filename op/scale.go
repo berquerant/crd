@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/berquerant/crd/errorx"
+	"github.com/berquerant/crd/logx"
 	"github.com/berquerant/crd/note"
 	"github.com/berquerant/crd/util"
 )
@@ -93,6 +94,12 @@ func (n ScaleNote) Semitone() note.Semitone {
 	s := n.Name.Semitone()
 	r := s + n.Accidental.Semitone()
 	return r
+}
+
+func MustNewScale(key Key) *Scale {
+	s, err := NewScale(key)
+	logx.PanicOnError(err)
+	return s
 }
 
 func NewScale(key Key) (*Scale, error) {

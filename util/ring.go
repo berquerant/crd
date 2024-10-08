@@ -1,6 +1,9 @@
 package util
 
 import (
+	"iter"
+	"slices"
+
 	"github.com/berquerant/crd/errorx"
 	"github.com/berquerant/crd/logx"
 )
@@ -34,3 +37,7 @@ func (r Ring[T]) At(i int) T {
 }
 
 func (r Ring[T]) Len() int { return len(r) }
+
+func (r Ring[T]) All() iter.Seq[T] {
+	return slices.Values(r)
+}

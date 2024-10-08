@@ -1,20 +1,91 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/berquerant/crd/errorx"
 	"github.com/berquerant/crd/op"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
 
 func init() {
-	rootCmd.AddCommand(keyCmd)
-	keyCmd.AddCommand(keyCmdDescribe, keyCmdList)
+	infoCmd.AddCommand(keyCmd)
+	keyCmd.AddCommand(keyCmdDescribe, keyCmdList, keyCmdConv)
 	setKeyPersistentFlag(keyCmd)
+	keyCmdConv.Flags().StringP("command", "c", "", "conversions")
 }
 
 var keyCmd = &cobra.Command{
 	Use:   "key",
 	Short: `key info`,
+}
+
+var keyCmdConv = &cobra.Command{
+	Use:   "conv [FILE]",
+	Short: `convert key`,
+	Long: `convert key
+
+Examples:
+# parallel of C
+crd info key conv --key "C" -c "p"
+# relative of C
+crd info key conv --key "C" -c "r"
+# dominant of C
+crd info key conv --key "C" -c "d"
+# subdominant of C
+crd info key conv --key "C" -c "s"
+# parallel of subdominant of C
+crd info key conv --key "C" -c "ps"`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		command, _ := cmd.Flags().GetString("command")
+		if command == "" {
+			return errorx.Invalid("command required")
+		}
+
+		scale, err := getScale(cmd)
+		if err != nil {
+			return err
+		}
+
+		out, err := getOutput(cmd)
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+
+		commandToConversion := func(c rune) op.KeyConversion {
+			switch c {
+			case 'p':
+				return op.ParallelKey
+			case 'r':
+				return op.RelativeKey
+			case 'd':
+				return op.DominantKey
+			case 's':
+				return op.SubDominantKey
+			default:
+				return op.UnknownKeyConversion
+			}
+		}
+		conversions := make([]op.KeyConversion, len(command))
+		for i, c := range command {
+			conversions[i] = commandToConversion(c)
+		}
+
+		circle := op.NewCircleOfFifth()
+		result, err := op.KeyConversionChain(conversions).Convert(circle, scale.Key)
+		if err != nil {
+			return err
+		}
+
+		for x := range result.Keys().All() {
+			if _, err := fmt.Fprintf(out, "%v\n", x); err != nil {
+				return err
+			}
+		}
+		return nil
+	},
 }
 
 var keyCmdList = &cobra.Command{

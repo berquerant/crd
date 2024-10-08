@@ -81,7 +81,7 @@ func getMeter(cmd *cobra.Command) (op.Meter, error) {
 }
 
 func setKeyPersistentFlag(cmd *cobra.Command) {
-	cmd.PersistentFlags().String("key", "", "override key")
+	cmd.PersistentFlags().StringP("key", "k", "", "override key")
 }
 
 func getKey(cmd *cobra.Command) (op.Key, error) {

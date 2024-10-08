@@ -12,7 +12,6 @@ Available Commands:
   gen         generate codes and files
   help        Help about any command
   info        show definitions
-  key         key info
   midi        midi util
   text        text processor
   write       write midi
