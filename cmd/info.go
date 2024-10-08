@@ -24,7 +24,7 @@ var infoCmd = &cobra.Command{
 }
 
 var infoCmdAttr = &cobra.Command{
-	Use:   "attr [FILE]",
+	Use:   "attr",
 	Short: "list attribute definitions",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		builder, err := newChordBuilder(cmd)
@@ -48,7 +48,7 @@ var infoCmdAttr = &cobra.Command{
 }
 
 var infoCmdChord = &cobra.Command{
-	Use:   "chord [FILE]",
+	Use:   "chord",
 	Short: "list chord definitions",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		builder, err := newChordBuilder(cmd)
