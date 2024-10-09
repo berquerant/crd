@@ -144,7 +144,7 @@ crd info key conv --key "C" -c "ps"`,
 }
 
 var keyCmdList = &cobra.Command{
-	Use:   "list [FILE]",
+	Use:   "list",
 	Short: `list all keys`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		out, err := getOutput(cmd)
@@ -163,7 +163,7 @@ var keyCmdList = &cobra.Command{
 }
 
 var keyCmdDescribe = &cobra.Command{
-	Use:   "describe [FILE]",
+	Use:   "describe",
 	Short: `describe key`,
 	Long: `describe key
 
