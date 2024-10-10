@@ -38,6 +38,10 @@ func (n ScaleNote) String() string {
 	return fmt.Sprintf("%v%v", n.Name, n.Accidental)
 }
 
+func (n ScaleNote) MarshalYAML() (any, error) {
+	return n.String(), nil
+}
+
 func (n ScaleNote) GetDegree(x *ScaleNote, isSharp bool) (note.Degree, error) {
 	s := x.Semitone() - n.Semitone()
 	oct := note.Octave(1).Semitone()

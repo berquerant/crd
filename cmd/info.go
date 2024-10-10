@@ -182,7 +182,16 @@ Examples:
 		}
 		defer out.Close()
 
-		b, err := yaml.Marshal(scale)
+		dc := op.NewDiatonicChorder(scale)
+		r := map[string]any{
+			"scale": scale,
+			"diatonic": map[string]any{
+				"triads": dc.Triads(),
+				"sevenths": dc.Sevenths(),
+			},
+		}
+
+		b, err := yaml.Marshal(r)
 		if err != nil {
 			return err
 		}
