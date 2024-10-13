@@ -129,18 +129,8 @@ var textCmdParse = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
 
-		b, err := yaml.Marshal(tArgs.tree)
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, tArgs.tree)
 	},
 }
 
@@ -148,7 +138,7 @@ type textCmdArgs struct {
 	tree *ast.ChordList
 }
 
-func newTextCmdArgs(cmd *cobra.Command, args []string) (*textCmdArgs, error) {
+func newTextCmdArgs(_ *cobra.Command, args []string) (*textCmdArgs, error) {
 	tree, err := parseTextFromArgs(args)
 	if err != nil {
 		return nil, err

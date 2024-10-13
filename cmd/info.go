@@ -9,7 +9,6 @@ import (
 	"github.com/berquerant/crd/note"
 	"github.com/berquerant/crd/op"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 func init() {
@@ -44,18 +43,7 @@ var infoCmdAttr = &cobra.Command{
 			return err
 		}
 
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
-
-		b, err := yaml.Marshal(builder.UnwrapAttributes())
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, builder.UnwrapAttributes())
 	},
 }
 
@@ -76,12 +64,6 @@ crd info attr describe -t "Minor7" -r "C#" -s
 			return err
 		}
 
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
-
 		root, err := getRootNote(cmd)
 		if err != nil {
 			return err
@@ -93,12 +75,7 @@ crd info attr describe -t "Minor7" -r "C#" -s
 			return err
 		}
 
-		b, err := yaml.Marshal(attrInfo)
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, attrInfo)
 	},
 }
 
@@ -111,18 +88,7 @@ var infoCmdChord = &cobra.Command{
 			return err
 		}
 
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
-
-		b, err := yaml.Marshal(builder.UnwrapChords())
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, builder.UnwrapChords())
 	},
 }
 
@@ -141,12 +107,6 @@ crd info chord describe -t "Caug" -s`,
 		if err != nil {
 			return err
 		}
-
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
 
 		target, _ := cmd.Flags().GetString("target")
 		targetBuf := bytes.NewBufferString(target)
@@ -176,12 +136,7 @@ crd info chord describe -t "Caug" -s`,
 			return err
 		}
 
-		b, err := yaml.Marshal(chordInfo)
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, chordInfo)
 	},
 }
 
@@ -260,19 +215,8 @@ crd info key conv --key "C" -c "ps"`,
 var infoKeyCmdList = &cobra.Command{
 	Use:   "list",
 	Short: `list all keys`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
-
-		b, err := yaml.Marshal(op.AllScales())
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		return writeYamlOutput(cmd, op.AllScales())
 	},
 }
 
@@ -290,19 +234,7 @@ Examples:
 			return err
 		}
 
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
-
 		r := desc.NewKey().Describe(scale)
-
-		b, err := yaml.Marshal(r)
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, r)
 	},
 }

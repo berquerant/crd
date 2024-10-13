@@ -139,18 +139,8 @@ var writeCmdParse = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		out, err := getOutput(cmd)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
 
-		b, err := yaml.Marshal(wArgs.instances)
-		if err != nil {
-			return err
-		}
-		_, err = out.Write(b)
-		return err
+		return writeYamlOutput(cmd, wArgs.instances)
 	},
 }
 

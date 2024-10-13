@@ -10,6 +10,7 @@ import (
 	"github.com/berquerant/crd/input/ast"
 	"github.com/berquerant/crd/util"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 //
@@ -51,6 +52,21 @@ func readFileOrStdin(name string, f func(io.ReadCloser) error) error {
 		}
 		return f(fp)
 	}
+}
+
+func writeYamlOutput(cmd *cobra.Command, v any) error {
+	out, err := getOutput(cmd)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	b, err := yaml.Marshal(v)
+	if err != nil {
+		return err
+	}
+	_, err = out.Write(b)
+	return err
 }
 
 func newChordBuilder(cmd *cobra.Command) (*chord.Builder, error) {
