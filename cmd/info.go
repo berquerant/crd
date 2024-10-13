@@ -156,7 +156,7 @@ var infoKeyCmd = &cobra.Command{
 }
 
 var infoKeyCmdConv = &cobra.Command{
-	Use:   "conv [FILE]",
+	Use:   "conv",
 	Short: `convert key`,
 	Long: `convert key
 
