@@ -8,8 +8,8 @@ import (
 
 // Mapper is a Chord dictionary.
 type Mapper interface {
-	Get(nameOrDisplay string) (Chord, bool)
-	GetAttributes(nameOrDiaplay string) ([]Attribute, bool)
+	GetChord(nameOrDisplay string) (Chord, bool)
+	GetChordAttributes(nameOrDiaplay string) ([]Attribute, bool)
 }
 
 var (
@@ -53,12 +53,12 @@ func (m Map) validate() error {
 	return errors.Join(errs...)
 }
 
-func (m Map) Get(nameOrDisplay string) (Chord, bool) {
+func (m Map) GetChord(nameOrDisplay string) (Chord, bool) {
 	c, ok := m.chords[nameOrDisplay]
 	return c, ok
 }
 
-func (m Map) GetAttributes(nameOrDisplay string) ([]Attribute, bool) {
+func (m Map) GetChordAttributes(nameOrDisplay string) ([]Attribute, bool) {
 	c, ok := m.chords[nameOrDisplay]
 	if !ok {
 		return nil, false
@@ -66,7 +66,7 @@ func (m Map) GetAttributes(nameOrDisplay string) ([]Attribute, bool) {
 
 	var attrs []Attribute
 	if x := c.Extends; x != "" {
-		if xs, ok := m.GetAttributes(x); ok {
+		if xs, ok := m.GetChordAttributes(x); ok {
 			attrs = append(attrs, xs...)
 		}
 	}

@@ -20,7 +20,7 @@ func NewKey(key op.Key, cmap chord.Mapper) Key {
 }
 
 func (k Key) Apply(c op.Chord) ([]MIDINoteNumber, error) {
-	attrs, ok := k.cmap.GetAttributes(c.Chord.Name)
+	attrs, ok := k.cmap.GetChordAttributes(c.Chord.Name)
 	if !ok {
 		return nil, errorx.NotFound("Chord %s", c.Chord.Name)
 	}

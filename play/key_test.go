@@ -16,12 +16,12 @@ type mockMapper struct {
 	mock.Mock
 }
 
-func (m *mockMapper) GetAttributes(name string) ([]chord.Attribute, bool) {
+func (m *mockMapper) GetChordAttributes(name string) ([]chord.Attribute, bool) {
 	r := m.Called(name)
 	return r.Get(0).([]chord.Attribute), r.Get(1).(bool)
 }
 
-func (*mockMapper) Get(name string) (chord.Chord, bool) {
+func (*mockMapper) GetChord(name string) (chord.Chord, bool) {
 	// unused
 	var c chord.Chord
 	return c, false
@@ -107,7 +107,7 @@ func TestKey(t *testing.T) {
 		} {
 			t.Run(tc.title, func(t *testing.T) {
 				var mapper mockMapper
-				mapper.On("GetAttributes", tc.c.Chord.Name).Return(tc.attrs, len(tc.attrs) > 0)
+				mapper.On("GetChordAttributes", tc.c.Chord.Name).Return(tc.attrs, len(tc.attrs) > 0)
 				key := play.NewKey(tc.key, &mapper)
 				got, err := key.Apply(tc.c)
 				if tc.err != nil {

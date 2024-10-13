@@ -203,7 +203,7 @@ func newWriteCmdArgs(cmd *cobra.Command, args []string) (*writeCmdArgs, error) {
 			}
 		}
 		if c := x.Chord; c != nil {
-			x, ok := cmap.Get(c.Chord)
+			x, ok := cmap.GetChord(c.Chord)
 			if !ok {
 				return nil, errorx.NotFound("Chord %s", c.Chord)
 			}
