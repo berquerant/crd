@@ -20,7 +20,7 @@ func init() {
 	setPrecedeSharpFlag(infoCmdAttrDescribe)
 	infoCmdAttrDescribe.Flags().StringP("target", "t", "", "attribute name")
 
-	infoCmdChord.AddCommand(infoCmdChordDescribe)
+	infoCmdChord.AddCommand(infoCmdChordList, infoCmdChordDescribe)
 	setPrecedeSharpFlag(infoCmdChordDescribe)
 	infoCmdChordDescribe.Flags().StringP("target", "t", "", "chord name")
 
@@ -86,6 +86,11 @@ crd info attr describe -t "Minor7" -r "C#" -s
 
 var infoCmdChord = &cobra.Command{
 	Use:   "chord",
+	Short: "show chord definitions",
+}
+
+var infoCmdChordList = &cobra.Command{
+	Use:   "list",
 	Short: "list chord definitions",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		builder, err := newChordBuilder(cmd)
