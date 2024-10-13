@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/berquerant/crd/desc"
 	"github.com/berquerant/crd/errorx"
 	"github.com/berquerant/crd/op"
 	"github.com/spf13/cobra"
@@ -170,7 +171,7 @@ var keyCmdDescribe = &cobra.Command{
 Examples:
   crd key describe --key "A"
   crd key describe --key "C#m"`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, _ []string) error {
 		scale, err := getScale(cmd)
 		if err != nil {
 			return err
@@ -182,14 +183,7 @@ Examples:
 		}
 		defer out.Close()
 
-		dc := op.NewDiatonicChorder(scale)
-		r := map[string]any{
-			"scale": scale,
-			"diatonic": map[string]any{
-				"triads": dc.Triads(),
-				"sevenths": dc.Sevenths(),
-			},
-		}
+		r := desc.NewKey().Describe(scale)
 
 		b, err := yaml.Marshal(r)
 		if err != nil {

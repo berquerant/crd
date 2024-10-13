@@ -1,11 +1,20 @@
 package op
 
-type DiatonicChorder struct {
+type DiatonicChorder interface {
+	Sevenths() [7]DiatonicChord
+	Triads() [7]DiatonicChord
+}
+
+var (
+	_ DiatonicChorder = &DiatonicChorderImpl{}
+)
+
+type DiatonicChorderImpl struct {
 	scale *Scale
 }
 
-func NewDiatonicChorder(scale *Scale) *DiatonicChorder {
-	return &DiatonicChorder{
+func NewDiatonicChorder(scale *Scale) *DiatonicChorderImpl {
+	return &DiatonicChorderImpl{
 		scale: scale,
 	}
 }
@@ -23,15 +32,15 @@ func (dc DiatonicChord) MarshalYAML() (any, error) {
 	return dc.String(), nil
 }
 
-func (dc DiatonicChorder) Sevenths() [7]DiatonicChord {
+func (dc DiatonicChorderImpl) Sevenths() [7]DiatonicChord {
 	return dc.generate(dc.seventhNames())
 }
 
-func (dc DiatonicChorder) Triads() [7]DiatonicChord {
+func (dc DiatonicChorderImpl) Triads() [7]DiatonicChord {
 	return dc.generate(dc.triadNames())
 }
 
-func (dc DiatonicChorder) generate(names [7]string) [7]DiatonicChord {
+func (dc DiatonicChorderImpl) generate(names [7]string) [7]DiatonicChord {
 	var (
 		r     [7]DiatonicChord
 		notes = dc.scale.Notes
@@ -45,7 +54,7 @@ func (dc DiatonicChorder) generate(names [7]string) [7]DiatonicChord {
 	return r
 }
 
-func (dc DiatonicChorder) seventhNames() [7]string {
+func (dc DiatonicChorderImpl) seventhNames() [7]string {
 	if dc.scale.Key.Minor {
 		return [7]string{
 			"m7",
@@ -69,7 +78,7 @@ func (dc DiatonicChorder) seventhNames() [7]string {
 	}
 }
 
-func (dc DiatonicChorder) triadNames() [7]string {
+func (dc DiatonicChorderImpl) triadNames() [7]string {
 	if dc.scale.Key.Minor {
 		return [7]string{
 			"m",
