@@ -118,3 +118,12 @@ func getRootNote(cmd *cobra.Command) (note.Note, error) {
 	v, _ := cmd.Flags().GetString("root")
 	return note.ParseNote(v)
 }
+
+func setPrecedeSharpFlag(cmd *cobra.Command) {
+	cmd.Flags().BoolP("precedeSharp", "s", false, "indicate applied note using sharp")
+}
+
+func getPrecedeSharpFlag(cmd *cobra.Command) bool {
+	v, _ := cmd.Flags().GetBool("precedeSharp")
+	return v
+}

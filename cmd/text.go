@@ -173,9 +173,3 @@ func parseTextFromArgs(args []string) (*ast.ChordList, error) {
 	}
 	return result, nil
 }
-
-func parseText(r io.Reader) (*ast.ChordList, error) {
-	lex := ast.NewLexer(r)
-	_ = ast.Parse(lex)
-	return lex.Result, lex.Err()
-}

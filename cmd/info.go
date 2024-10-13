@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/berquerant/crd/desc"
 	"github.com/berquerant/crd/errorx"
+	"github.com/berquerant/crd/note"
 	"github.com/berquerant/crd/op"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -16,8 +18,12 @@ func init() {
 
 	infoCmdAttr.AddCommand(infoCmdAttrDescribe)
 	setRootNoteFlag(infoCmdAttrDescribe)
+	setPrecedeSharpFlag(infoCmdAttrDescribe)
 	infoCmdAttrDescribe.Flags().StringP("target", "t", "", "attribute name")
-	infoCmdAttrDescribe.Flags().BoolP("precedeSharp", "s", false, "indicate applied note using sharp")
+
+	infoCmdChord.AddCommand(infoCmdChordDescribe)
+	setPrecedeSharpFlag(infoCmdChordDescribe)
+	infoCmdChordDescribe.Flags().StringP("target", "t", "", "chord name")
 
 	infoKeyCmd.AddCommand(infoKeyCmdDescribe, infoKeyCmdList, infoKeyCmdConv)
 	setKeyPersistentFlag(infoKeyCmd)
@@ -81,7 +87,7 @@ crd info attr describe -t "Minor7" -r "C#" -s
 			return err
 		}
 		attr, _ := cmd.Flags().GetString("target")
-		precedeSharp, _ := cmd.Flags().GetBool("precedeSharp")
+		precedeSharp := getPrecedeSharpFlag(cmd)
 		attrInfo, err := desc.NewAttribute(mapper).Describe(attr, root, precedeSharp)
 		if err != nil {
 			return err
@@ -112,6 +118,65 @@ var infoCmdChord = &cobra.Command{
 		defer out.Close()
 
 		b, err := yaml.Marshal(builder.UnwrapChords())
+		if err != nil {
+			return err
+		}
+		_, err = out.Write(b)
+		return err
+	},
+}
+
+var infoCmdChordDescribe = &cobra.Command{
+	Use:   "describe",
+	Short: "describe chord",
+	Long: `describe chord
+
+Examples:
+# describe C7
+crd info chord describe -t "C_7"
+# describe Caug using sharp
+crd info chord describe -t "Caug" -s`,
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		mapper, err := newChordMap(cmd)
+		if err != nil {
+			return err
+		}
+
+		out, err := getOutput(cmd)
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+
+		target, _ := cmd.Flags().GetString("target")
+		targetBuf := bytes.NewBufferString(target)
+		tree, err := parseTextOneChordSymbol(targetBuf)
+		if err != nil {
+			return err
+		}
+
+		symbolString := ""
+		if s := tree.Symbol; s != nil {
+			symbolString = s.Symbol.Value()
+		}
+
+		noteString := tree.Degree.Degree.Value()
+		if a := tree.Degree.Accidental; a != nil {
+			noteString += a.Value()
+		}
+		root, err := note.ParseNote(noteString)
+		if err != nil {
+			return err
+		}
+
+		precedeSharp := getPrecedeSharpFlag(cmd)
+		chordInfo, err := desc.NewChord(mapper, desc.NewAttribute(mapper)).
+			Describe(symbolString, root, precedeSharp)
+		if err != nil {
+			return err
+		}
+
+		b, err := yaml.Marshal(chordInfo)
 		if err != nil {
 			return err
 		}

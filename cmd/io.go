@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"io"
 	"os"
 
 	"github.com/berquerant/crd/chord"
 	"github.com/berquerant/crd/errorx"
+	"github.com/berquerant/crd/input/ast"
 	"github.com/berquerant/crd/util"
 	"github.com/spf13/cobra"
 )
@@ -92,4 +94,33 @@ func newChordMap(cmd *cobra.Command) (chord.Mapper, error) {
 		return nil, err
 	}
 	return b.Build()
+}
+
+func parseText(r io.Reader) (*ast.ChordList, error) {
+	lex := ast.NewLexer(r)
+	_ = ast.Parse(lex)
+	return lex.Result, lex.Err()
+}
+
+func parseTextOneChordSymbol(r io.Reader) (*ast.Chord, error) {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	buf := bytes.NewBuffer(b)
+	buf.WriteString("[1]") // expect C, Dm to C[1], Dm[1]
+	tree, err := parseText(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tree.List) != 1 {
+		return nil, errorx.Invalid("Parse one chord: %s", b)
+	}
+	c := tree.List[0]
+	cd, ok := c.(*ast.Chord)
+	if !ok {
+		return nil, errorx.Invalid("Parse one chord: %s", b)
+	}
+	return cd, nil
 }
