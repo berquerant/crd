@@ -48,6 +48,7 @@ Track 0	@0(0)	MetaInstrument text: "Piano"
 Track 0	@0(0)	ProgramChange channel: 0 program: 0
 Track 0	@0(0)	MetaTempo bpm: 80.00
 Track 0	@0(0)	MetaTimeSig meter: 3/4
+Track 0	@0(0)	MetaKeySig key: AMaj
 Track 0	@0(0)	NoteOn channel: 0 key: 57 velocity: 85
 Track 0	@0(0)	NoteOn channel: 0 key: 69 velocity: 85
 Track 0	@0(0)	NoteOn channel: 0 key: 73 velocity: 85
@@ -106,6 +107,7 @@ Track 0	@0(0)	MetaInstrument text: "Piano"
 Track 0	@0(0)	ProgramChange channel: 0 program: 0
 Track 0	@0(0)	MetaTempo bpm: 100.00
 Track 0	@0(0)	MetaTimeSig meter: 4/4
+Track 0	@0(0)	MetaKeySig key: CMaj
 Track 0	@0(0)	NoteOn channel: 0 key: 48 velocity: 64
 Track 0	@0(0)	NoteOn channel: 0 key: 60 velocity: 64
 Track 0	@0(0)	NoteOn channel: 0 key: 64 velocity: 64
