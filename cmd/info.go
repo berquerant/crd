@@ -169,7 +169,7 @@ crd info key conv --key "C" -c "r"
 crd info key conv --key "C" -c "d"
 # subdominant of C
 crd info key conv --key "C" -c "s"
-# parallel of subdominant of C
+# subdominant of parallel of C
 crd info key conv --key "C" -c "ps"`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		command, _ := cmd.Flags().GetString("command")
