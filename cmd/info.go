@@ -169,8 +169,8 @@ var keyCmdDescribe = &cobra.Command{
 	Long: `describe key
 
 Examples:
-  crd key describe --key "A"
-  crd key describe --key "C#m"`,
+  crd info key describe --key "A"
+  crd info key describe --key "C#m"`,
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		scale, err := getScale(cmd)
 		if err != nil {
