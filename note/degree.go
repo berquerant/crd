@@ -6,6 +6,7 @@ import (
 	"iter"
 	"strings"
 
+	"github.com/berquerant/crd/errorx"
 	"github.com/berquerant/crd/logx"
 	"github.com/berquerant/crd/util"
 	"gopkg.in/yaml.v3"
@@ -176,6 +177,14 @@ func NewDegree(value uint, name DegreeName) (Degree, bool) {
 		return d, false
 	}
 	return d, true
+}
+
+func MustNewDegree(value uint, name DegreeName) Degree {
+	x, ok := NewDegree(value, name)
+	if !ok {
+		logx.Panic(errorx.Unexpected("MustNewDegree(%d, %s)", value, name))
+	}
+	return x
 }
 
 type CoerceDegreeName int

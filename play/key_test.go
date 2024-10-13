@@ -27,6 +27,12 @@ func (*mockMapper) GetChord(name string) (chord.Chord, bool) {
 	return c, false
 }
 
+func (*mockMapper) GetAttribute(name string) (chord.Attribute, bool) {
+	// unused
+	var a chord.Attribute
+	return a, false
+}
+
 func TestKey(t *testing.T) {
 	t.Run("Apply", func(t *testing.T) {
 		var (

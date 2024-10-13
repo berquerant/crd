@@ -12,8 +12,11 @@ import (
 
 func init() {
 	rootCmd.AddCommand(infoCmd)
-	infoCmd.AddCommand(infoCmdAttr, infoCmdChord)
-	infoCmd.AddCommand(keyCmd)
+	infoCmd.AddCommand(infoCmdAttr, infoCmdChord, keyCmd)
+	infoCmdAttr.AddCommand(infoCmdAttrDescribe)
+	setRootNoteFlag(infoCmdAttrDescribe)
+	infoCmdAttrDescribe.Flags().StringP("target", "t", "", "attribute name")
+	infoCmdAttrDescribe.Flags().BoolP("precedeSharp", "s", false, "indicate applied note using sharp")
 	keyCmd.AddCommand(keyCmdDescribe, keyCmdList, keyCmdConv)
 	setKeyPersistentFlag(keyCmd)
 	keyCmdConv.Flags().StringP("command", "c", "", "conversions")
@@ -40,6 +43,49 @@ var infoCmdAttr = &cobra.Command{
 		defer out.Close()
 
 		b, err := yaml.Marshal(builder.UnwrapAttributes())
+		if err != nil {
+			return err
+		}
+		_, err = out.Write(b)
+		return err
+	},
+}
+
+var infoCmdAttrDescribe = &cobra.Command{
+	Use:   "describe",
+	Short: "describe attribute",
+	Long: `describe attribute
+
+Examples:
+# describe the result of applying Minor7 to C#
+crd info attr describe -t "Minor7" -r "C#"
+# describe the result of applying Minor7 to C# using sharp
+crd info attr describe -t "Minor7" -r "C#" -s
+`,
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		mapper, err := newChordMap(cmd)
+		if err != nil {
+			return err
+		}
+
+		out, err := getOutput(cmd)
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+
+		root, err := getRootNote(cmd)
+		if err != nil {
+			return err
+		}
+		attr, _ := cmd.Flags().GetString("target")
+		precedeSharp, _ := cmd.Flags().GetBool("precedeSharp")
+		attrInfo, err := desc.NewAttribute(mapper).Describe(attr, root, precedeSharp)
+		if err != nil {
+			return err
+		}
+
+		b, err := yaml.Marshal(attrInfo)
 		if err != nil {
 			return err
 		}

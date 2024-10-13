@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/berquerant/crd/errorx"
+	"github.com/berquerant/crd/note"
 	"github.com/berquerant/crd/op"
 	"github.com/berquerant/crd/util"
 	"github.com/spf13/cobra"
@@ -107,4 +108,13 @@ func getScale(cmd *cobra.Command) (*op.Scale, error) {
 		return nil, err
 	}
 	return scale, nil
+}
+
+func setRootNoteFlag(cmd *cobra.Command) {
+	cmd.Flags().StringP("root", "r", "C", "root note")
+}
+
+func getRootNote(cmd *cobra.Command) (note.Note, error) {
+	v, _ := cmd.Flags().GetString("root")
+	return note.ParseNote(v)
 }

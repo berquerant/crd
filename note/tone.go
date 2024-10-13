@@ -9,7 +9,7 @@ import (
 type Semitone int
 
 func (s Semitone) MarshalYAML() (any, error) {
-	return yaml.Marshal(int(s))
+	return int(s), nil
 }
 
 func (s *Semitone) UnmarshalYAML(value *yaml.Node) error {

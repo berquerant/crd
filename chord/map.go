@@ -10,6 +10,7 @@ import (
 type Mapper interface {
 	GetChord(nameOrDisplay string) (Chord, bool)
 	GetChordAttributes(nameOrDiaplay string) ([]Attribute, bool)
+	GetAttribute(name string) (Attribute, bool)
 }
 
 var (
@@ -75,4 +76,9 @@ func (m Map) GetChordAttributes(nameOrDisplay string) ([]Attribute, bool) {
 		attrs = append(attrs, m.attributes[a])
 	}
 	return attrs, true
+}
+
+func (m Map) GetAttribute(name string) (Attribute, bool) {
+	a, ok := m.attributes[name]
+	return a, ok
 }
