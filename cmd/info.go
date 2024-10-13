@@ -15,7 +15,7 @@ func init() {
 	rootCmd.AddCommand(infoCmd)
 	infoCmd.AddCommand(infoCmdAttr, infoCmdChord, infoKeyCmd)
 
-	infoCmdAttr.AddCommand(infoCmdAttrDescribe)
+	infoCmdAttr.AddCommand(infoCmdAttrList, infoCmdAttrDescribe)
 	setRootNoteFlag(infoCmdAttrDescribe)
 	setPrecedeSharpFlag(infoCmdAttrDescribe)
 	infoCmdAttrDescribe.Flags().StringP("target", "t", "", "attribute name")
@@ -36,6 +36,11 @@ var infoCmd = &cobra.Command{
 
 var infoCmdAttr = &cobra.Command{
 	Use:   "attr",
+	Short: "show attribute definitions",
+}
+
+var infoCmdAttrList = &cobra.Command{
+	Use:   "list",
 	Short: "list attribute definitions",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		builder, err := newChordBuilder(cmd)
