@@ -25,6 +25,7 @@ type Writer interface {
 	Note(value float64, velocity uint8, key ...uint8) error
 	Tempo(bpm int)
 	Meter(num, denom uint8)
+	Key(key uint8, isMajor bool, num uint8, isFlat bool)
 	Close()
 	Rest(value float64)
 	WriteTo(out io.Writer) (int64, error)
@@ -117,6 +118,13 @@ func (w *MIDIWriter) Meter(num, denom uint8) {
 	x := w.getTickDeltaAndClear()
 	w.add(func(t *Track) {
 		t.Add(x, smf.MetaMeter(num, denom))
+	})
+}
+
+func (w *MIDIWriter) Key(key uint8, isMajor bool, num uint8, isFlat bool) {
+	x := w.getTickDeltaAndClear()
+	w.add(func(t *Track) {
+		t.Add(x, smf.MetaKey(key, isMajor, num, isFlat))
 	})
 }
 

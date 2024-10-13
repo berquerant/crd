@@ -29,6 +29,14 @@ func (m *midiArgs) writeWhenUpdated(w midix.Writer) {
 	m.meter.WhenUpdated(func(v op.Meter) {
 		w.Meter(uint8(v.Num), uint8(v.Denom))
 	})
+	m.key.WhenUpdated(func(v op.Key) {
+		scale := op.MustNewScale(v)
+		key := uint8(scale.Tonic().Semitone())
+		isMajor := !scale.Key.Minor
+		num := uint8(scale.Flat + scale.Sharp)
+		isFlat := scale.Flat > 0
+		w.Key(key, isMajor, num, isFlat)
+	})
 }
 
 func (m midiArgs) getKey() op.Key     { return m.key.Unwrap() }
