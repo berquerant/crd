@@ -12,14 +12,16 @@ import (
 
 func init() {
 	rootCmd.AddCommand(infoCmd)
-	infoCmd.AddCommand(infoCmdAttr, infoCmdChord, keyCmd)
+	infoCmd.AddCommand(infoCmdAttr, infoCmdChord, infoKeyCmd)
+
 	infoCmdAttr.AddCommand(infoCmdAttrDescribe)
 	setRootNoteFlag(infoCmdAttrDescribe)
 	infoCmdAttrDescribe.Flags().StringP("target", "t", "", "attribute name")
 	infoCmdAttrDescribe.Flags().BoolP("precedeSharp", "s", false, "indicate applied note using sharp")
-	keyCmd.AddCommand(keyCmdDescribe, keyCmdList, keyCmdConv)
-	setKeyPersistentFlag(keyCmd)
-	keyCmdConv.Flags().StringP("command", "c", "", "conversions")
+
+	infoKeyCmd.AddCommand(infoKeyCmdDescribe, infoKeyCmdList, infoKeyCmdConv)
+	setKeyPersistentFlag(infoKeyCmd)
+	infoKeyCmdConv.Flags().StringP("command", "c", "", "conversions")
 }
 
 var infoCmd = &cobra.Command{
@@ -118,12 +120,12 @@ var infoCmdChord = &cobra.Command{
 	},
 }
 
-var keyCmd = &cobra.Command{
+var infoKeyCmd = &cobra.Command{
 	Use:   "key",
 	Short: `key info`,
 }
 
-var keyCmdConv = &cobra.Command{
+var infoKeyCmdConv = &cobra.Command{
 	Use:   "conv [FILE]",
 	Short: `convert key`,
 	Long: `convert key
@@ -190,7 +192,7 @@ crd info key conv --key "C" -c "ps"`,
 	},
 }
 
-var keyCmdList = &cobra.Command{
+var infoKeyCmdList = &cobra.Command{
 	Use:   "list",
 	Short: `list all keys`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -209,7 +211,7 @@ var keyCmdList = &cobra.Command{
 	},
 }
 
-var keyCmdDescribe = &cobra.Command{
+var infoKeyCmdDescribe = &cobra.Command{
 	Use:   "describe",
 	Short: `describe key`,
 	Long: `describe key
