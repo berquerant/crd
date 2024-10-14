@@ -207,6 +207,37 @@ R[1] ; Rest, 1 beat
 `,
 		},
 		{
+			title: "degree text into instances yaml meta",
+			args:  []string{"text", "conv", "degree"},
+			input: `1[1] ; I, 1 beat
+5_7/5[1] ; V7/V, 1 beat
+2[2]{key=Cm} ; II, 2 beats, modulation
+R[1] ; Rest, 1 beat
+`,
+			output: `- chord:
+    degree: "1"
+    name: ""
+  values:
+    - "1"
+- chord:
+    degree: "5"
+    name: "7"
+    base: "5"
+  values:
+    - "1"
+- chord:
+    degree: "2"
+    name: ""
+  values:
+    - "2"
+  key: Cm
+  meta:
+    key: Cm
+- values:
+    - "1"
+`,
+		},
+		{
 			title: "degree text into instances yaml",
 			args:  []string{"text", "conv", "degree"},
 			input: `1[1] ; I, 1 beat

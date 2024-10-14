@@ -11,21 +11,94 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMetaConverter(t *testing.T) {
-	newMeta := func(keyValue ...string) *op.Meta {
-		d := map[string]string{}
-		var i int
-		for i < len(keyValue) {
-			key := keyValue[i]
-			i++
-			value := keyValue[i]
-			i++
-			d[key] = value
-		}
-		r := op.Meta(d)
-		return &r
+func newMeta(keyValue ...string) *op.Meta {
+	d := map[string]string{}
+	var i int
+	for i < len(keyValue) {
+		key := keyValue[i]
+		i++
+		value := keyValue[i]
+		i++
+		d[key] = value
 	}
+	r := op.Meta(d)
+	return &r
+}
 
+func TestMetaInstanceModifier(t *testing.T) {
+	for _, tc := range []struct {
+		title string
+		meta  *op.Meta
+		want  func(v *input.Instance)
+	}{
+		{
+			title: "key bpm changes",
+			meta:  newMeta("key", "Am", "bpm", "200"),
+			want: func(v *input.Instance) {
+				{
+					x := op.MustParseKey("Am")
+					v.Key = &x
+				}
+				{
+					x := op.BPM(200)
+					v.BPM = &x
+				}
+			},
+		},
+		{
+			title: "key changes",
+			meta:  newMeta("key", "Am"),
+			want: func(v *input.Instance) {
+				x := op.MustParseKey("Am")
+				v.Key = &x
+			},
+		},
+		{
+			title: "meter changes",
+			meta:  newMeta("mtr", "5/8"),
+			want: func(v *input.Instance) {
+				x := op.MustNewMeter(5, 8)
+				v.Meter = &x
+			},
+		},
+		{
+			title: "velocity changes",
+			meta:  newMeta("vel", "ff"),
+			want: func(v *input.Instance) {
+				x := op.Fortissimo
+				v.Velocity = &x
+			},
+		},
+		{
+			title: "bpm changes",
+			meta:  newMeta("bpm", "180"),
+			want: func(v *input.Instance) {
+				x := op.BPM(180)
+				v.BPM = &x
+			},
+		},
+		{
+			title: "no changes",
+			meta:  nil,
+			want:  func(_ *input.Instance) {},
+		},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			var (
+				m    astconv.MetaInstanceModifierImpl
+				got  input.Instance
+				want input.Instance
+			)
+			if !assert.Nil(t, m.Modify(&got, tc.meta)) {
+				return
+			}
+			tc.want(&want)
+			assert.Equal(t, want, got)
+		})
+	}
+}
+
+func TestMetaConverter(t *testing.T) {
 	for _, tc := range []struct {
 		title string
 		tree  *ast.ChordMeta

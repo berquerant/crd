@@ -1,6 +1,7 @@
 package astconv
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/berquerant/crd/errorx"
@@ -21,11 +22,13 @@ func NewSyllableASTConverter(scale *op.Scale) *ASTConverter {
 		vc ValuesConverterImpl
 		cc = NewSyllableChordConverter(scale)
 		mc MetaConverterImpl
+		mm MetaInstanceModifierImpl
 	)
 	return &ASTConverter{
 		valuesConverter: &vc,
 		chordConverter:  cc,
 		metaConverter:   &mc,
+		metaModifier:    &mm,
 	}
 }
 
@@ -34,11 +37,13 @@ func NewDegreeASTConverter() *ASTConverter {
 		vc ValuesConverterImpl
 		cc DegreeChordConverter
 		mc MetaConverterImpl
+		mm MetaInstanceModifierImpl
 	)
 	return &ASTConverter{
 		valuesConverter: &vc,
 		chordConverter:  &cc,
 		metaConverter:   &mc,
+		metaModifier:    &mm,
 	}
 }
 
@@ -50,6 +55,7 @@ type ASTConverter struct {
 	valuesConverter ValuesConverter
 	chordConverter  ChordConverter
 	metaConverter   MetaConverter
+	metaModifier    MetaInstanceModifier
 }
 
 func (c ASTConverter) Convert(v ast.ChordOrRest) (*input.Instance, error) {
@@ -64,24 +70,137 @@ func (c ASTConverter) Convert(v ast.ChordOrRest) (*input.Instance, error) {
 			return nil, fmt.Errorf("%w: Chord", err)
 		}
 		meta := c.metaConverter.Convert(v.Meta)
-		return &input.Instance{
+		x := &input.Instance{
 			Values: values,
 			Chord:  chod,
 			Meta:   meta,
-		}, nil
+		}
+		if err := c.metaModifier.Modify(x, meta); err != nil {
+			return nil, err
+		}
+		return x, nil
 	case *ast.Rest:
 		values, err := c.valuesConverter.Convert(v.Values)
 		if err != nil {
 			return nil, fmt.Errorf("%w: Rest", err)
 		}
 		meta := c.metaConverter.Convert(v.Meta)
-		return &input.Instance{
+		x := &input.Instance{
 			Values: values,
 			Meta:   meta,
-		}, nil
+		}
+		if err := c.metaModifier.Modify(x, meta); err != nil {
+			return nil, err
+		}
+		return x, nil
 	default:
 		return nil, errorx.Unexpected("Neither Chord nor Rest")
 	}
+}
+
+type MetaInstanceModifier interface {
+	Modify(v *input.Instance, meta *op.Meta) error
+}
+
+var (
+	_ MetaInstanceModifier = &MetaInstanceModifierImpl{}
+)
+
+type MetaInstanceModifierImpl struct{}
+
+func (m MetaInstanceModifierImpl) Modify(v *input.Instance, meta *op.Meta) error {
+	if meta == nil {
+		return nil
+	}
+	{
+		x, err := m.convertBPM(meta)
+		if err == nil {
+			v.BPM = x
+		} else if !errors.Is(err, errorx.ErrOK) {
+			return err
+		}
+	}
+	{
+		x, err := m.convertVelocity(meta)
+		if err == nil {
+			v.Velocity = x
+		} else if !errors.Is(err, errorx.ErrOK) {
+			return err
+		}
+	}
+	{
+		x, err := m.convertMeter(meta)
+		if err == nil {
+			v.Meter = x
+		} else if !errors.Is(err, errorx.ErrOK) {
+			return err
+		}
+	}
+	{
+		x, err := m.convertKey(meta)
+		if err == nil {
+			v.Key = x
+		} else if !errors.Is(err, errorx.ErrOK) {
+			return err
+		}
+	}
+	return nil
+}
+
+func (MetaInstanceModifierImpl) convertBPM(meta *op.Meta) (*op.BPM, error) {
+	s := meta.Get(input.MetaBPMKey)
+	if s == "" {
+		return nil, errorx.ErrOK
+	}
+	u, err := util.ParseUint(s)
+	if err != nil {
+		return nil, err
+	}
+	x, err := op.NewBPM(u)
+	if err != nil {
+		return nil, err
+	}
+	return &x, nil
+}
+
+func (MetaInstanceModifierImpl) convertVelocity(meta *op.Meta) (*op.DynamicSign, error) {
+	s := meta.Get(input.MetaVelocityKey)
+	if s == "" {
+		return nil, errorx.ErrOK
+	}
+	x := op.NewDynamicSign(s)
+	if x == op.UnknownDynamicSign {
+		return nil, errorx.Invalid("UnknownDynamicSign: %s", s)
+	}
+	return &x, nil
+}
+
+func (MetaInstanceModifierImpl) convertMeter(meta *op.Meta) (*op.Meter, error) {
+	s := meta.Get(input.MetaMeterKey)
+	if s == "" {
+		return nil, errorx.ErrOK
+	}
+	r, err := util.ParseRat(s)
+	if err != nil {
+		return nil, err
+	}
+	x, err := op.NewMeter(r.Num, r.Denom)
+	if err != nil {
+		return nil, err
+	}
+	return &x, nil
+}
+
+func (MetaInstanceModifierImpl) convertKey(meta *op.Meta) (*op.Key, error) {
+	s := meta.Get(input.MetaKeyKey)
+	if s == "" {
+		return nil, errorx.ErrOK
+	}
+	x, err := op.ParseKey(s)
+	if err != nil {
+		return nil, err
+	}
+	return &x, nil
 }
 
 type MetaConverter interface {

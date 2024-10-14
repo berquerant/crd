@@ -23,7 +23,11 @@ type Chord struct {
 }
 
 const (
-	MetaTextKey   = "txt"
-	MetaLyricKey  = "lic"
-	MetaMarkerKey = "mrk"
+	MetaTextKey     = "txt"
+	MetaLyricKey    = "lic"
+	MetaMarkerKey   = "mrk"
+	MetaBPMKey      = "bpm"
+	MetaVelocityKey = "vel"
+	MetaMeterKey    = "mtr"
+	MetaKeyKey      = "key"
 )

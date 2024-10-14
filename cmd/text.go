@@ -39,7 +39,24 @@ Bbm[2]
 # D A7/E E Rest (D major)
 # '_' is required when chord symbol is a number
 echo 'D[1] A_7/E[1] E[2] R[1]' | crd text conv syllable --key D | crd write midi -o out.midi
-`,
+# metadata
+# modulation to A minor
+C[1]{key=Am}
+# modulation and bpm change
+C[1]{key=Am,bpm=200}
+# available metadata keys:
+# txt: text
+C[1]{txt=message}
+# lic: lyric
+C[1]{lic=some lyric}
+# mrk: marker
+C[1]{mrk=some marker}
+# bpm: BPM
+C[1]{bpm=180}
+# vel: velocity
+C[1]{vel=ff}
+# mtr: meter
+C[1]{mtr=5/4}`,
 }
 
 var textCmdConvSyllable = &cobra.Command{

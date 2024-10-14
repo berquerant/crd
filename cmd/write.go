@@ -65,6 +65,11 @@ YAML format:
   # see: crd key list
   # C minor
   key: "Cm"
+  # metadata
+  meta:
+    txt: "text message"
+    lic: "lyric message"
+    mrk: "marker message"
 
 # Rest
 # 2 beats
