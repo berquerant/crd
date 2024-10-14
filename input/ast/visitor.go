@@ -63,6 +63,7 @@ func (s *IterVisitor) VisitChord(v *Chord) {
 	VisitSwitch(s, v.Symbol)
 	VisitSwitch(s, v.Base)
 	VisitSwitch(s, v.Values)
+	VisitSwitch(s, v.Meta)
 }
 func (s *IterVisitor) VisitChordDegree(v *ChordDegree) {
 	if v == nil || !s.send(v) {
@@ -98,6 +99,22 @@ func (s *IterVisitor) VisitRest(v *Rest) {
 		return
 	}
 	VisitSwitch(s, v.Values)
+	VisitSwitch(s, v.Meta)
+}
+
+func (s *IterVisitor) VisitChordMeta(v *ChordMeta) {
+	if v == nil || !s.send(v) {
+		return
+	}
+	for _, x := range v.Data {
+		VisitSwitch(s, x)
+	}
+}
+
+func (s *IterVisitor) VisitChordMetadata(v *ChordMetadata) {
+	if v == nil || !s.send(v) {
+		return
+	}
 }
 
 // MapVisitor maps Token value and AST into dictionary.
@@ -159,6 +176,11 @@ func (s *MapVisitor) VisitChord(v *Chord) {
 
 	VisitSwitch(s, v.Values)
 	d["values"] = s.result
+
+	VisitSwitch(s, v.Meta)
+	if x := s.result; x != nil {
+		d["meta"] = s.result
+	}
 
 	s.result = d
 }
@@ -232,10 +254,41 @@ func (s *MapVisitor) VisitRest(v *Rest) {
 		s.result = nil
 		return
 	}
+
+	d := map[string]any{}
 	VisitSwitch(s, v.Values)
-	s.result = map[string]any{
-		"values": s.result,
+	d["values"] = s.result
+	VisitSwitch(s, v.Meta)
+	if x := s.result; x != nil {
+		d["meta"] = x
 	}
+	s.result = d
+}
+
+func (s *MapVisitor) VisitChordMeta(v *ChordMeta) {
+	if v == nil {
+		s.result = nil
+		return
+	}
+	xs := make([]map[string]any, len(v.Data))
+	for i, x := range v.Data {
+		VisitSwitch(s, x)
+		xs[i] = s.result
+	}
+	s.result = map[string]any{
+		"data": xs,
+	}
+}
+
+func (s *MapVisitor) VisitChordMetadata(v *ChordMetadata) {
+	if v == nil {
+		s.result = nil
+		return
+	}
+	d := map[string]any{}
+	s.setWhenOK(d, "key")(v.Key)
+	s.setWhenOK(d, "value")(v.Value)
+	s.result = d
 }
 
 func (s MapVisitor) setWhenOK(d map[string]any, key string) func(ybase.Token) {

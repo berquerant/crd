@@ -16,6 +16,7 @@ type ChordOrRest interface {
 
 type Rest struct {
 	Values *ChordValues `json:"values" yaml:"values"`
+	Meta   *ChordMeta   `json:"meta,omitempty" yaml:"meta,omitempty"`
 }
 
 func (*Rest) IsChordOrRest() {}
@@ -25,6 +26,7 @@ type Chord struct {
 	Symbol *ChordSymbol `json:"symbol,omitempty" yaml:"symbol,omitempty"`
 	Base   *ChordBase   `json:"base,omitempty" yaml:"base,omitempty"`
 	Values *ChordValues `json:"values" yaml:"values"`
+	Meta   *ChordMeta   `json:"meta,omitempty" yaml:"meta,omitempty"`
 }
 
 func (*Chord) IsChordOrRest() {}
@@ -49,4 +51,13 @@ type ChordValues struct {
 type ChordValue struct {
 	Num   ybase.Token `json:"num" yaml:"num"`
 	Denom ybase.Token `json:"denom,omitempty" yaml:"denom,omitempty"`
+}
+
+type ChordMeta struct {
+	Data []*ChordMetadata `json:"data,omitempty" yaml:"data,omitempty"`
+}
+
+type ChordMetadata struct {
+	Key   ybase.Token `json:"key" yaml:"key"`
+	Value ybase.Token `json:"value" yaml:"value"`
 }

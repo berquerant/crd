@@ -307,6 +307,59 @@ C[1]`,
 }`,
 		},
 		{
+			title: "Chord and Rest with meta",
+			input: `C[1,1/2]{c=1} R[3]{d=meta,e=3}`,
+			want: `{
+  "list": [
+    {
+      "degree": {
+        "degree": "C"
+      },
+      "values": {
+        "values": [
+          {
+            "num": "1"
+          },
+          {
+            "num": "1",
+            "denom": "2"
+          }
+        ]
+      },
+      "meta": {
+        "data": [
+          {
+            "key": "c",
+            "value": "1"
+          }
+        ]
+      }
+    },
+    {
+      "values": {
+         "values": [
+           {
+             "num": "3"
+           }
+         ]
+      },
+      "meta": {
+        "data": [
+          {
+            "key": "d",
+            "value": "meta"
+          },
+          {
+            "key": "e",
+            "value": "3"
+          }
+        ]
+      }
+    }
+  ]
+}`,
+		},
+		{
 			title: "Chord and Rest",
 			input: `C[1,1/2] R[3]`,
 			want: `{

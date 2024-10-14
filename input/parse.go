@@ -13,6 +13,7 @@ type Instance struct {
 	Velocity *op.DynamicSign `yaml:"velocity,omitempty"`
 	Meter    *op.Meter       `yaml:"meter,omitempty"`
 	Key      *op.Key         `yaml:"key,omitempty"`
+	Meta     *op.Meta        `yaml:"meta,omitempty"`
 }
 
 type Chord struct {

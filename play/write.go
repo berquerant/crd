@@ -14,6 +14,7 @@ var (
 	defaultKey      = op.MustParseKey("C")
 	defaultMeter    = op.MustNewMeter(4, 4)
 	defaultVelocity = op.MezzoPiano
+	defaultMeta     = op.Meta(map[string]string{})
 )
 
 type Writer interface {

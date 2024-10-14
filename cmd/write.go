@@ -186,6 +186,7 @@ func newWriteCmdArgs(cmd *cobra.Command, args []string) (*writeCmdArgs, error) {
 			Velocity: x.Velocity,
 			Meter:    x.Meter,
 			Key:      x.Key,
+			Meta:     x.Meta,
 		}
 		if i == 0 {
 			if err := overrideInstanceFromFlags(cmd, &v); err != nil {

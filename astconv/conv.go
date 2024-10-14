@@ -20,10 +20,12 @@ func NewSyllableASTConverter(scale *op.Scale) *ASTConverter {
 	var (
 		vc ValuesConverterImpl
 		cc = NewSyllableChordConverter(scale)
+		mc MetaConverterImpl
 	)
 	return &ASTConverter{
 		valuesConverter: &vc,
 		chordConverter:  cc,
+		metaConverter:   &mc,
 	}
 }
 
@@ -31,10 +33,12 @@ func NewDegreeASTConverter() *ASTConverter {
 	var (
 		vc ValuesConverterImpl
 		cc DegreeChordConverter
+		mc MetaConverterImpl
 	)
 	return &ASTConverter{
 		valuesConverter: &vc,
 		chordConverter:  &cc,
+		metaConverter:   &mc,
 	}
 }
 
@@ -45,6 +49,7 @@ var (
 type ASTConverter struct {
 	valuesConverter ValuesConverter
 	chordConverter  ChordConverter
+	metaConverter   MetaConverter
 }
 
 func (c ASTConverter) Convert(v ast.ChordOrRest) (*input.Instance, error) {
@@ -58,21 +63,49 @@ func (c ASTConverter) Convert(v ast.ChordOrRest) (*input.Instance, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: Chord", err)
 		}
+		meta := c.metaConverter.Convert(v.Meta)
 		return &input.Instance{
 			Values: values,
 			Chord:  chod,
+			Meta:   meta,
 		}, nil
 	case *ast.Rest:
 		values, err := c.valuesConverter.Convert(v.Values)
 		if err != nil {
 			return nil, fmt.Errorf("%w: Rest", err)
 		}
+		meta := c.metaConverter.Convert(v.Meta)
 		return &input.Instance{
 			Values: values,
+			Meta:   meta,
 		}, nil
 	default:
 		return nil, errorx.Unexpected("Neither Chord nor Rest")
 	}
+}
+
+type MetaConverter interface {
+	Convert(v *ast.ChordMeta) *op.Meta
+}
+
+var (
+	_ MetaConverter = &MetaConverterImpl{}
+)
+
+type MetaConverterImpl struct{}
+
+func (MetaConverterImpl) Convert(v *ast.ChordMeta) *op.Meta {
+	if v == nil || len(v.Data) == 0 {
+		return nil
+	}
+	d := map[string]string{}
+	for _, x := range v.Data {
+		key := x.Key.Value()
+		value := x.Value.Value()
+		d[key] = value
+	}
+	r := op.Meta(d)
+	return &r
 }
 
 type ValuesConverter interface {

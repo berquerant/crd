@@ -23,6 +23,9 @@ type yySymType struct {
 	base          *ChordBase
 	values        *ChordValues
 	value         *ChordValue
+	metadata      *ChordMetadata
+	meta_internal *ChordMeta
+	meta          *ChordMeta
 
 	degree_head ybase.Token
 	accidental  ybase.Token
@@ -42,6 +45,10 @@ const NUMBER = 57354
 const SYMBOL = 57355
 const REST = 57356
 const UNDERSCORE = 57357
+const LCBRA = 57358
+const RCBRA = 57359
+const EQUAL = 57360
+const METADATA = 57361
 
 var yyToknames = [...]string{
 	"$end",
@@ -59,6 +66,10 @@ var yyToknames = [...]string{
 	"SYMBOL",
 	"REST",
 	"UNDERSCORE",
+	"LCBRA",
+	"RCBRA",
+	"EQUAL",
+	"METADATA",
 }
 
 var yyStatenames = [...]string{}
@@ -76,51 +87,55 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 38
+const yyLast = 49
 
 var yyAct = [...]int8{
-	20, 21, 7, 16, 9, 15, 14, 9, 16, 22,
-	32, 29, 10, 12, 6, 10, 18, 19, 34, 27,
-	26, 27, 25, 28, 24, 3, 17, 30, 11, 31,
-	33, 8, 23, 13, 5, 4, 2, 1,
+	37, 31, 20, 21, 7, 45, 38, 42, 41, 32,
+	16, 9, 15, 22, 14, 9, 16, 40, 34, 10,
+	28, 6, 29, 10, 18, 19, 39, 27, 12, 30,
+	25, 33, 35, 26, 27, 24, 3, 36, 17, 11,
+	8, 43, 44, 23, 13, 5, 4, 2, 1,
 }
 
 var yyPact = [...]int16{
-	0, -1000, 0, -1000, -1000, -1000, 7, -10, 6, -1000,
-	-1000, -1000, -3, 19, -1000, -5, -1000, -1000, -1000, -1000,
-	13, -1000, 18, 5, 3, -1000, -1000, -3, -2, -3,
-	-1000, -1000, -1000, 11, -1000,
+	7, -1000, 7, -1000, -1000, -1000, 22, -3, 14, -1000,
+	-1000, -1000, 1, 30, -1000, 3, -1000, -1000, -1000, -1000,
+	26, -1000, 15, 16, 11, -1000, -7, 1, 6, 1,
+	-1000, -1000, -13, -1000, -1000, 19, 0, -1000, -11, -7,
+	-1000, -13, -14, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int8{
-	0, 37, 36, 25, 35, 34, 2, 33, 6, 32,
-	0, 1, 31, 26,
+	0, 48, 47, 36, 46, 45, 4, 44, 14, 43,
+	2, 3, 40, 38, 0, 37, 1,
 }
 
 var yyR1 = [...]int8{
 	0, 1, 2, 2, 3, 3, 4, 5, 6, 6,
 	12, 12, 13, 13, 7, 7, 7, 8, 9, 9,
-	10, 10, 11, 11,
+	10, 10, 11, 11, 16, 16, 15, 15, 14,
 }
 
 var yyR2 = [...]int8{
-	0, 1, 1, 2, 1, 1, 4, 6, 1, 2,
+	0, 1, 1, 2, 1, 1, 5, 7, 1, 2,
 	1, 1, 1, 1, 0, 1, 2, 1, 0, 2,
-	1, 3, 1, 3,
+	1, 3, 1, 3, 0, 3, 1, 3, 3,
 }
 
 var yyChk = [...]int16{
 	-1000, -1, -2, -3, -4, -5, 14, -6, -12, 4,
 	12, -3, 6, -7, -8, 15, 13, -13, 10, 11,
 	-10, -11, 12, -9, 5, -8, 7, 8, 5, 6,
-	-6, -11, 12, -10, 7,
+	-6, -16, 16, -11, 12, -10, -15, -14, 19, 7,
+	17, 8, 18, -16, -14, 19,
 }
 
 var yyDef = [...]int8{
 	0, -2, 1, 2, 4, 5, 0, 14, 8, 10,
 	11, 3, 0, 18, 15, 0, 17, 9, 12, 13,
-	0, 20, 22, 0, 0, 16, 6, 0, 0, 0,
-	19, 21, 23, 0, 7,
+	0, 20, 22, 0, 0, 16, 24, 0, 0, 0,
+	19, 6, 0, 21, 23, 0, 0, 26, 0, 24,
+	25, 0, 0, 7, 27, 28,
 }
 
 var yyTok1 = [...]int8{
@@ -129,7 +144,7 @@ var yyTok1 = [...]int8{
 
 var yyTok2 = [...]int8{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-	12, 13, 14, 15,
+	12, 13, 14, 15, 16, 17, 18, 19,
 }
 
 var yyTok3 = [...]int8{
@@ -475,7 +490,7 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:56
+//line chords.y:66
 		{
 			r := &ChordList{
 				List: yyDollar[1].chord_list,
@@ -485,50 +500,52 @@ yydefault:
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:65
+//line chords.y:75
 		{
 			yyVAL.chord_list = []ChordOrRest{yyDollar[1].chord_or_rest}
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line chords.y:68
+//line chords.y:78
 		{
 			yyVAL.chord_list = append(yyDollar[1].chord_list, yyDollar[2].chord_or_rest)
 		}
 	case 4:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:73
+//line chords.y:83
 		{
 			yyVAL.chord_or_rest = yyDollar[1].rest
 		}
 	case 5:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:76
+//line chords.y:86
 		{
 			yyVAL.chord_or_rest = yyDollar[1].chod
 		}
 	case 6:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line chords.y:84
+		yyDollar = yyS[yypt-5 : yypt+1]
+//line chords.y:95
 		{
 			yyVAL.rest = &Rest{
 				Values: yyDollar[3].values,
+				Meta:   yyDollar[5].meta,
 			}
 		}
 	case 7:
-		yyDollar = yyS[yypt-6 : yypt+1]
-//line chords.y:96
+		yyDollar = yyS[yypt-7 : yypt+1]
+//line chords.y:109
 		{
 			yyVAL.chod = &Chord{
 				Degree: yyDollar[1].degree,
 				Symbol: yyDollar[2].symbol,
 				Base:   yyDollar[3].base,
 				Values: yyDollar[5].values,
+				Meta:   yyDollar[7].meta,
 			}
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:106
+//line chords.y:120
 		{
 			yyVAL.degree = &ChordDegree{
 				Degree: yyDollar[1].degree_head,
@@ -536,7 +553,7 @@ yydefault:
 		}
 	case 9:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line chords.y:111
+//line chords.y:125
 		{
 			yyVAL.degree = &ChordDegree{
 				Degree:     yyDollar[1].degree_head,
@@ -545,49 +562,49 @@ yydefault:
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:119
+//line chords.y:133
 		{
 			yyVAL.degree_head = NewToken(yyDollar[1].token)
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:122
+//line chords.y:136
 		{
 			yyVAL.degree_head = NewToken(yyDollar[1].token)
 		}
 	case 12:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:127
+//line chords.y:141
 		{
 			yyVAL.accidental = NewToken(yyDollar[1].token)
 		}
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:130
+//line chords.y:144
 		{
 			yyVAL.accidental = NewToken(yyDollar[1].token)
 		}
 	case 14:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line chords.y:135
+//line chords.y:149
 		{
 			yyVAL.symbol = nil
 		}
 	case 15:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:138
+//line chords.y:152
 		{
 			yyVAL.symbol = yyDollar[1].simple_symbol
 		}
 	case 16:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line chords.y:141
+//line chords.y:155
 		{
 			yyVAL.symbol = yyDollar[2].simple_symbol
 		}
 	case 17:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:146
+//line chords.y:160
 		{
 			yyVAL.simple_symbol = &ChordSymbol{
 				Symbol: NewToken(yyDollar[1].token),
@@ -595,13 +612,13 @@ yydefault:
 		}
 	case 18:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line chords.y:153
+//line chords.y:167
 		{
 			yyVAL.base = nil
 		}
 	case 19:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line chords.y:156
+//line chords.y:170
 		{
 			yyVAL.base = &ChordBase{
 				Degree: yyDollar[2].degree,
@@ -609,7 +626,7 @@ yydefault:
 		}
 	case 20:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:163
+//line chords.y:177
 		{
 			yyVAL.values = &ChordValues{
 				Values: []*ChordValue{yyDollar[1].value},
@@ -617,7 +634,7 @@ yydefault:
 		}
 	case 21:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line chords.y:168
+//line chords.y:182
 		{
 			yyVAL.values = &ChordValues{
 				Values: append(yyDollar[1].values.Values, yyDollar[3].value),
@@ -625,7 +642,7 @@ yydefault:
 		}
 	case 22:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line chords.y:175
+//line chords.y:189
 		{
 			yyVAL.value = &ChordValue{
 				Num: NewToken(yyDollar[1].token),
@@ -633,11 +650,48 @@ yydefault:
 		}
 	case 23:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line chords.y:180
+//line chords.y:194
 		{
 			yyVAL.value = &ChordValue{
 				Num:   NewToken(yyDollar[1].token),
 				Denom: NewToken(yyDollar[3].token),
+			}
+		}
+	case 24:
+		yyDollar = yyS[yypt-0 : yypt+1]
+//line chords.y:202
+		{
+			yyVAL.meta = nil
+		}
+	case 25:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line chords.y:205
+		{
+			yyVAL.meta = yyDollar[2].meta_internal
+		}
+	case 26:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line chords.y:210
+		{
+			yyVAL.meta_internal = &ChordMeta{
+				Data: []*ChordMetadata{yyDollar[1].metadata},
+			}
+		}
+	case 27:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line chords.y:215
+		{
+			yyVAL.meta_internal = &ChordMeta{
+				Data: append(yyDollar[1].meta_internal.Data, yyDollar[3].metadata),
+			}
+		}
+	case 28:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line chords.y:224
+		{
+			yyVAL.metadata = &ChordMetadata{
+				Key:   NewToken(yyDollar[1].token),
+				Value: NewToken(yyDollar[3].token),
 			}
 		}
 	}

@@ -92,22 +92,30 @@ Track 0	@3840(4)	MetaEndOfTrack
   values:
     - "1"
   key: C
+  meta:
+    # txt is text
+    txt: "I"
 - chord:
     name: DominantSeventh
     degree: "5"
   values:
     - "1"
+  meta:
+    txt: "V7"
 - chord:
     name: MajorTriad
     degree: "4"
   values:
-    - "2"`,
+    - "2"
+  meta:
+    txt: "IV"`,
 			output: `Track 0	@0(0)	MetaTrackName text: "Piano"
 Track 0	@0(0)	MetaInstrument text: "Piano"
 Track 0	@0(0)	ProgramChange channel: 0 program: 0
 Track 0	@0(0)	MetaTempo bpm: 100.00
 Track 0	@0(0)	MetaTimeSig meter: 4/4
 Track 0	@0(0)	MetaKeySig key: CMaj
+Track 0	@0(0)	MetaText text: "I"
 Track 0	@0(0)	NoteOn channel: 0 key: 48 velocity: 64
 Track 0	@0(0)	NoteOn channel: 0 key: 60 velocity: 64
 Track 0	@0(0)	NoteOn channel: 0 key: 64 velocity: 64
@@ -116,6 +124,7 @@ Track 0	@960(1)	NoteOff channel: 0 key: 48
 Track 0	@960(1)	NoteOff channel: 0 key: 60
 Track 0	@960(1)	NoteOff channel: 0 key: 64
 Track 0	@960(1)	NoteOff channel: 0 key: 67
+Track 0	@960(1)	MetaText text: "V7"
 Track 0	@960(1)	NoteOn channel: 0 key: 55 velocity: 64
 Track 0	@960(1)	NoteOn channel: 0 key: 67 velocity: 64
 Track 0	@960(1)	NoteOn channel: 0 key: 71 velocity: 64
@@ -126,6 +135,7 @@ Track 0	@1920(2)	NoteOff channel: 0 key: 67
 Track 0	@1920(2)	NoteOff channel: 0 key: 71
 Track 0	@1920(2)	NoteOff channel: 0 key: 74
 Track 0	@1920(2)	NoteOff channel: 0 key: 77
+Track 0	@1920(2)	MetaText text: "IV"
 Track 0	@1920(2)	NoteOn channel: 0 key: 53 velocity: 64
 Track 0	@1920(2)	NoteOn channel: 0 key: 65 velocity: 64
 Track 0	@1920(2)	NoteOn channel: 0 key: 69 velocity: 64

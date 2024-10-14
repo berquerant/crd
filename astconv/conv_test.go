@@ -11,6 +11,85 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestMetaConverter(t *testing.T) {
+	newMeta := func(keyValue ...string) *op.Meta {
+		d := map[string]string{}
+		var i int
+		for i < len(keyValue) {
+			key := keyValue[i]
+			i++
+			value := keyValue[i]
+			i++
+			d[key] = value
+		}
+		r := op.Meta(d)
+		return &r
+	}
+
+	for _, tc := range []struct {
+		title string
+		tree  *ast.ChordMeta
+		want  *op.Meta
+	}{
+		{
+			title: "nil",
+			tree:  nil,
+			want:  nil,
+		},
+		{
+			title: "no data",
+			tree:  &ast.ChordMeta{},
+			want:  nil,
+		},
+		{
+			title: "one pair",
+			tree: &ast.ChordMeta{
+				Data: []*ast.ChordMetadata{
+					{
+						Key: &ast.Token{
+							VValue: "k",
+						},
+						Value: &ast.Token{
+							VValue: "v",
+						},
+					},
+				},
+			},
+			want: newMeta("k", "v"),
+		},
+		{
+			title: "two pairs",
+			tree: &ast.ChordMeta{
+				Data: []*ast.ChordMetadata{
+					{
+						Key: &ast.Token{
+							VValue: "k",
+						},
+						Value: &ast.Token{
+							VValue: "v",
+						},
+					},
+					{
+						Key: &ast.Token{
+							VValue: "k2",
+						},
+						Value: &ast.Token{
+							VValue: "v2",
+						},
+					},
+				},
+			},
+			want: newMeta("k", "v", "k2", "v2"),
+		},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			var c astconv.MetaConverterImpl
+			got := c.Convert(tc.tree)
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}
+
 func TestValuesConverter(t *testing.T) {
 	for _, tc := range []struct {
 		title string

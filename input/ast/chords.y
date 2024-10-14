@@ -16,6 +16,9 @@ import "github.com/berquerant/ybase"
   base *ChordBase
   values *ChordValues
   value *ChordValue
+  metadata *ChordMetadata
+  meta_internal *ChordMeta
+  meta *ChordMeta
 
   degree_head ybase.Token
   accidental ybase.Token
@@ -36,6 +39,9 @@ import "github.com/berquerant/ybase"
 %type <value> value
 %type <degree_head> degree_head
 %type <accidental> accidental
+%type <metadata> metadata
+%type <meta_internal> meta_internal
+%type <meta> meta
 
 %token <token> SYLLABLE
 %token <token> SLASH
@@ -49,6 +55,10 @@ import "github.com/berquerant/ybase"
 %token <token> SYMBOL
 %token <token> REST
 %token <token> UNDERSCORE
+%token <token> LCBRA
+%token <token> RCBRA
+%token <token> EQUAL
+%token <token> METADATA
 
 %%
 
@@ -81,9 +91,11 @@ rest:
   REST
   LBRA
   values
-  RBRA {
+  RBRA
+  meta {
     $$ = &Rest{
       Values: $3,
+      Meta: $5,
     }
   }
 
@@ -93,12 +105,14 @@ chod:
   base
   LBRA
   values
-  RBRA {
+  RBRA
+  meta {
     $$ = &Chord{
       Degree: $1,
       Symbol: $2,
       Base: $3,
       Values: $5,
+      Meta: $7,
     }
   }
 
@@ -181,5 +195,35 @@ value:
     $$ = &ChordValue{
       Num: NewToken($1),
       Denom: NewToken($3),
+    }
+  }
+
+meta:
+  {
+    $$ = nil
+  }
+  | LCBRA meta_internal RCBRA {
+    $$ = $2
+  }
+
+meta_internal:
+  metadata {
+    $$ = &ChordMeta{
+      Data: []*ChordMetadata{$1},
+    }
+  }
+  | meta_internal COMMA metadata {
+    $$ = &ChordMeta{
+      Data: append($1.Data, $3),
+    }
+  }
+
+metadata:
+  METADATA
+  EQUAL
+  METADATA {
+    $$ = &ChordMetadata{
+      Key: NewToken($1),
+      Value: NewToken($3),
     }
   }

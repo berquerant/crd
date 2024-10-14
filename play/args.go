@@ -11,6 +11,7 @@ type midiArgs struct {
 	meter    *util.Opt[op.Meter]
 	velocity *util.Opt[op.DynamicSign]
 	key      *util.Opt[op.Key]
+	meta     *util.Opt[op.Meta]
 }
 
 func newMidiArgs() *midiArgs {
@@ -19,6 +20,7 @@ func newMidiArgs() *midiArgs {
 		meter:    util.NewOpt(defaultMeter),
 		velocity: util.NewOpt(defaultVelocity),
 		key:      util.NewOpt(defaultKey),
+		meta:     util.NewOpt(defaultMeta),
 	}
 }
 
@@ -37,6 +39,11 @@ func (m *midiArgs) writeWhenUpdated(w midix.Writer) {
 		isFlat := scale.Flat > 0
 		w.Key(key, isMajor, num, isFlat)
 	})
+	m.meta.WhenUpdated(func(v op.Meta) {
+		if x := v.Get("txt"); x != "" {
+			w.Text(x)
+		}
+	})
 }
 
 func (m midiArgs) getKey() op.Key     { return m.key.Unwrap() }
@@ -54,5 +61,8 @@ func (m *midiArgs) update(instance op.Instance) {
 	}
 	if x := instance.Key; x != nil {
 		m.key.Update(*x)
+	}
+	if x := instance.Meta; x != nil {
+		m.meta.Update(*x)
 	}
 }

@@ -45,16 +45,27 @@ func (lex *Lexer) Lex(lval *yySymType) int {
 }
 
 type LexScanner struct {
-	expectSymbol bool
-	publishError func(string)
+	expectSymbol   bool
+	expectMetadata bool
+	publishError   func(string)
 }
 
 func (lex *LexScanner) SetExpectSymbol(v bool) {
 	lex.expectSymbol = v
 }
 
+func (lex *LexScanner) SetExpectMetadata(v bool) {
+	lex.expectMetadata = v
+}
+
 func (lex *LexScanner) ScanFunc(r ybase.Reader) int {
 	r.DiscardWhile(unicode.IsSpace)
+
+	if lex.expectMetadata {
+		if lex.scanMetadata(r) {
+			return METADATA
+		}
+	}
 
 	if lex.expectSymbol {
 		if lex.scanSymbol(r) {
@@ -83,6 +94,14 @@ func (lex *LexScanner) ScanFunc(r ybase.Reader) int {
 		return nextRet(LBRA)
 	case ']':
 		return nextRet(RBRA)
+	case '{':
+		lex.SetExpectMetadata(true)
+		return nextRet(LCBRA)
+	case '}':
+		lex.SetExpectMetadata(false)
+		return nextRet(RCBRA)
+	case '=':
+		return nextRet(EQUAL)
 	case ',':
 		return nextRet(COMMA)
 	case '#', '♯':
@@ -125,7 +144,7 @@ func (lex LexScanner) isSymbolRune(r rune) bool {
 }
 
 func (LexScanner) isBeginningOfNextOfSymbol(r rune) bool {
-	return strings.ContainsRune("/[_;", r)
+	return strings.ContainsRune("/[_;=", r)
 }
 
 func (lex LexScanner) scanSymbol(r ybase.Reader) bool {
@@ -140,6 +159,26 @@ func (lex LexScanner) scanSymbol(r ybase.Reader) bool {
 	default:
 		slog.Debug("LexScanner: scanSymbol")
 		r.NextWhile(lex.isSymbolRune)
+		return true
+	}
+}
+
+func (lex LexScanner) isMetadataRune(r rune) bool {
+	return !strings.ContainsRune("{}=,", r)
+}
+
+func (lex LexScanner) scanMetadata(r ybase.Reader) bool {
+	slog.Debug("LexScanner: scanMetadata try")
+
+	x := r.Peek()
+	switch {
+	case x == ybase.EOF:
+		return false
+	case !lex.isMetadataRune(x):
+		return false
+	default:
+		slog.Debug("LexScanner: scanMetadata")
+		r.NextWhile(lex.isMetadataRune)
 		return true
 	}
 }

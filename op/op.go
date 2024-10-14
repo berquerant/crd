@@ -13,6 +13,7 @@ type Instance struct {
 	Velocity *DynamicSign `yaml:"velocity,omitempty"`
 	Meter    *Meter       `yaml:"meter,omitempty"`
 	Key      *Key         `yaml:"key,omitempty"`
+	Meta     *Meta        `yaml:"meta,omitempty"`
 }
 
 func (i Instance) IsRest() bool {
@@ -24,4 +25,10 @@ func (i Instance) Validate() error {
 		return errorx.Invalid("Instance should have values")
 	}
 	return nil
+}
+
+type Meta map[string]string
+
+func (m Meta) Get(key string) string {
+	return m[key]
 }
