@@ -32,3 +32,21 @@ type Meta map[string]string
 func (m Meta) Get(key string) string {
 	return m[key]
 }
+
+func (m Meta) Set(key, value string) {
+	m[key] = value
+}
+
+func NewMeta(keyValues ...string) *Meta {
+	d := map[string]string{}
+	var i int
+	for i < len(keyValues) {
+		k := keyValues[i]
+		i++
+		v := keyValues[i]
+		i++
+		d[k] = v
+	}
+	x := Meta(d)
+	return &x
+}

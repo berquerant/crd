@@ -52,3 +52,7 @@ func OpenAndParse[T any](file string, f func([]byte) (T, error)) (T, error) {
 	}
 	return ReadAndParse(fp, f)
 }
+
+func Ptr[T any](t T) *T {
+	return &t
+}

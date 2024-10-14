@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 
 	"github.com/berquerant/crd/chord"
 	"github.com/berquerant/crd/errorx"
@@ -18,12 +19,13 @@ import (
 
 func init() {
 	rootCmd.AddCommand(writeCmd)
-	writeCmd.AddCommand(writeCmdParse, writeCmdEvent, writeCmdPlay)
+	writeCmd.AddCommand(writeCmdParse, writeCmdEvent, writeCmdPlay, writeCmdConv)
 	setBPMPersistentFlag(writeCmd)
 	setVelocityPersistentFlag(writeCmd)
 	setMeterPersistentFlag(writeCmd)
 	setKeyPersistentFlag(writeCmd)
 	writeCmdPlay.Flags().StringP("port", "p", "", "midi out port name")
+	writeCmdConv.Flags().StringSliceP("command", "c", nil, "input instances conversions")
 }
 
 var writeCmd = &cobra.Command{
@@ -136,6 +138,58 @@ var writeCmdEvent = &cobra.Command{
 	},
 }
 
+var writeCmdConv = &cobra.Command{
+	Use:   "conv [FILE]",
+	Short: `convert instances yaml`,
+	Long: `convert instances yaml
+
+Examples:
+# Write chord name to meta.txt.
+crd write conv --command cmt`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		commands, _ := cmd.Flags().GetStringSlice("command")
+		if len(commands) == 0 {
+			return errorx.Invalid("require command")
+		}
+		instances, err := parseInstancesFromArgs(args)
+		if err != nil {
+			return err
+		}
+
+		getModifier := func(c string) (input.Modifier, bool) {
+			switch c {
+			case "cmt":
+				slog.Debug("modifier", slog.String("command", c))
+				return input.NewChordMetaTextMofidier(".", " on "), true
+			default:
+				return nil, true
+			}
+		}
+		modifiers := []input.Modifier{}
+		for i, c := range commands {
+			x, ok := getModifier(c)
+			if !ok {
+				return errorx.NotFound("Modifier[%d] %s", i, c)
+			}
+			modifiers = append(modifiers, x)
+		}
+
+		for i, m := range modifiers {
+			for j, x := range instances {
+				if err := m.Modify(x); err != nil {
+					return fmt.Errorf("%w: modifier[%d] instances[%d]", err, i, j)
+				}
+			}
+		}
+
+		wArgs, err := newWriteCmdArgsFromInputInstances(cmd, instances)
+		if err != nil {
+			return err
+		}
+		return writeYamlOutput(cmd, wArgs.instances)
+	},
+}
+
 var writeCmdParse = &cobra.Command{
 	Use:   "parse [FILE]",
 	Short: `parse input instances yaml`,
@@ -175,11 +229,15 @@ func (w writeCmdArgs) writeToPlay() (midix.Writer, error) {
 }
 
 func newWriteCmdArgs(cmd *cobra.Command, args []string) (*writeCmdArgs, error) {
-	cmap, err := newChordMap(cmd)
+	inputInstances, err := parseInstancesFromArgs(args)
 	if err != nil {
 		return nil, err
 	}
-	inputInstances, err := parseInstancesFromArgs(args)
+	return newWriteCmdArgsFromInputInstances(cmd, inputInstances)
+}
+
+func newWriteCmdArgsFromInputInstances(cmd *cobra.Command, inputInstances []*input.Instance) (*writeCmdArgs, error) {
+	cmap, err := newChordMap(cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -214,8 +272,8 @@ func newWriteCmdArgs(cmd *cobra.Command, args []string) (*writeCmdArgs, error) {
 	}, nil
 }
 
-func parseInstancesFromArgs(args []string) ([]input.Instance, error) {
-	var result []input.Instance
+func parseInstancesFromArgs(args []string) ([]*input.Instance, error) {
+	var result []*input.Instance
 	if err := readFileOrStdinFromArgs(args, func(r io.ReadCloser) error {
 		instances, err := util.ReadAndParse(r, parseInstances)
 		if err != nil {
@@ -229,8 +287,8 @@ func parseInstancesFromArgs(args []string) ([]input.Instance, error) {
 	return result, nil
 }
 
-func parseInstances(buf []byte) ([]input.Instance, error) {
-	var r []input.Instance
+func parseInstances(buf []byte) ([]*input.Instance, error) {
+	var r []*input.Instance
 	if err := yaml.Unmarshal(buf, &r); err != nil {
 		return nil, err
 	}

@@ -11,18 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func newMeta(keyValue ...string) *op.Meta {
-	d := map[string]string{}
-	var i int
-	for i < len(keyValue) {
-		key := keyValue[i]
-		i++
-		value := keyValue[i]
-		i++
-		d[key] = value
-	}
-	r := op.Meta(d)
-	return &r
+func newMeta(keyValues ...string) *op.Meta {
+	return op.NewMeta(keyValues...)
 }
 
 func TestMetaInstanceModifier(t *testing.T) {
