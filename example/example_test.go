@@ -79,7 +79,7 @@ Track 0	@3840(4)	MetaEndOfTrack
 `,
 		},
 		{
-			title: "write midi event",
+			title: "write midi event meta",
 			args:  []string{"write", "event"},
 			input: `# Write
 # - I, 1 beat
@@ -104,6 +104,7 @@ Track 0	@3840(4)	MetaEndOfTrack
     - "1"
   meta:
     txt: "V7"
+    mrk: "dominant"
 - chord:
     name: MajorTriad
     degree: "4"
@@ -128,6 +129,7 @@ Track 0	@960(1)	NoteOff channel: 0 key: 60
 Track 0	@960(1)	NoteOff channel: 0 key: 64
 Track 0	@960(1)	NoteOff channel: 0 key: 67
 Track 0	@960(1)	MetaText text: "V7"
+Track 0	@960(1)	MetaMarker text: "dominant"
 Track 0	@960(1)	NoteOn channel: 0 key: 55 velocity: 64
 Track 0	@960(1)	NoteOn channel: 0 key: 67 velocity: 64
 Track 0	@960(1)	NoteOn channel: 0 key: 71 velocity: 64

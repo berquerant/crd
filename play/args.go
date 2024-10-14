@@ -46,6 +46,9 @@ func (m *midiArgs) writeWhenUpdated(w midix.Writer) {
 		if x := v.Get("lic"); x != "" {
 			w.Lyric(x)
 		}
+		if x := v.Get("mrk"); x != "" {
+			w.Marker(x)
+		}
 	})
 }
 
