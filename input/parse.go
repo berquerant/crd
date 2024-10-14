@@ -21,3 +21,9 @@ type Chord struct {
 	Chord  string       `yaml:"name"`
 	Base   *note.Degree `yaml:"base,omitempty"`
 }
+
+const (
+	MetaTextKey   = "txt"
+	MetaLyricKey  = "lic"
+	MetaMarkerKey = "mrk"
+)

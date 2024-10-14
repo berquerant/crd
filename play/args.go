@@ -1,6 +1,7 @@
 package play
 
 import (
+	"github.com/berquerant/crd/input"
 	"github.com/berquerant/crd/midix"
 	"github.com/berquerant/crd/op"
 	"github.com/berquerant/crd/util"
@@ -40,13 +41,13 @@ func (m *midiArgs) writeWhenUpdated(w midix.Writer) {
 		w.Key(key, isMajor, num, isFlat)
 	})
 	m.meta.WhenUpdated(func(v op.Meta) {
-		if x := v.Get("txt"); x != "" {
+		if x := v.Get(input.MetaTextKey); x != "" {
 			w.Text(x)
 		}
-		if x := v.Get("lic"); x != "" {
+		if x := v.Get(input.MetaLyricKey); x != "" {
 			w.Lyric(x)
 		}
-		if x := v.Get("mrk"); x != "" {
+		if x := v.Get(input.MetaMarkerKey); x != "" {
 			w.Marker(x)
 		}
 	})
