@@ -95,6 +95,8 @@ Track 0	@3840(4)	MetaEndOfTrack
   meta:
     # txt is text
     txt: "I"
+    # lic is lyric
+    lic: "Start"
 - chord:
     name: DominantSeventh
     degree: "5"
@@ -116,6 +118,7 @@ Track 0	@0(0)	MetaTempo bpm: 100.00
 Track 0	@0(0)	MetaTimeSig meter: 4/4
 Track 0	@0(0)	MetaKeySig key: CMaj
 Track 0	@0(0)	MetaText text: "I"
+Track 0	@0(0)	MetaLyric text: "Start"
 Track 0	@0(0)	NoteOn channel: 0 key: 48 velocity: 64
 Track 0	@0(0)	NoteOn channel: 0 key: 60 velocity: 64
 Track 0	@0(0)	NoteOn channel: 0 key: 64 velocity: 64

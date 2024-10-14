@@ -27,6 +27,7 @@ type Writer interface {
 	Meter(num, denom uint8)
 	Key(key uint8, isMajor bool, num uint8, isFlat bool)
 	Text(text string)
+	Lyric(text string)
 	Close()
 	Rest(value float64)
 	WriteTo(out io.Writer) (int64, error)
@@ -133,6 +134,13 @@ func (w *MIDIWriter) Text(text string) {
 	x := w.getTickDeltaAndClear()
 	w.add(func(t *Track) {
 		t.Add(x, smf.MetaText(text))
+	})
+}
+
+func (w *MIDIWriter) Lyric(text string) {
+	x := w.getTickDeltaAndClear()
+	w.add(func(t *Track) {
+		t.Add(x, smf.MetaLyric(text))
 	})
 }
 
