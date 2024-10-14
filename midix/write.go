@@ -10,6 +10,8 @@ import (
 	"gitlab.com/gomidi/midi/v2/smf"
 )
 
+// TODO: properly segment the track to allow for more sounds and metadata to coexist
+
 const (
 	DefaultTrackSequenceName   = "Piano"
 	DefaultInstrument          = "Piano"
