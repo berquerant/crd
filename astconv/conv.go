@@ -58,40 +58,68 @@ type ASTConverter struct {
 	metaModifier    MetaInstanceModifier
 }
 
-func (c ASTConverter) Convert(v ast.ChordOrRest) (*input.Instance, error) {
+func (c *ASTConverter) changeScale(v *input.Instance) error {
+	if v.Key == nil {
+		return nil
+	}
+	x, ok := c.chordConverter.(ScaleChangeable)
+	if !ok {
+		return nil
+	}
+
+	scale, err := op.NewScale(*v.Key)
+	if err != nil {
+		return err
+	}
+	x.ChangeScale(scale)
+	return nil
+}
+
+func (c *ASTConverter) Convert(v ast.ChordOrRest) (*input.Instance, error) {
 	switch v := v.(type) {
 	case *ast.Chord:
+		meta := c.metaConverter.Convert(v.Meta)
+		x := &input.Instance{
+			Meta: meta,
+		}
+		if err := c.metaModifier.Modify(x, meta); err != nil {
+			return nil, err
+		}
+		if err := c.changeScale(x); err != nil {
+			return nil, err
+		}
+
 		values, err := c.valuesConverter.Convert(v.Values)
 		if err != nil {
 			return nil, fmt.Errorf("%w: ChordValues", err)
 		}
+		x.Values = values
+
 		chod, err := c.chordConverter.Convert(v)
 		if err != nil {
 			return nil, fmt.Errorf("%w: Chord", err)
 		}
+		x.Chord = chod
+
+		return x, nil
+	case *ast.Rest:
 		meta := c.metaConverter.Convert(v.Meta)
 		x := &input.Instance{
-			Values: values,
-			Chord:  chod,
-			Meta:   meta,
+			Meta: meta,
 		}
 		if err := c.metaModifier.Modify(x, meta); err != nil {
 			return nil, err
 		}
-		return x, nil
-	case *ast.Rest:
+		if err := c.changeScale(x); err != nil {
+			return nil, err
+		}
+
 		values, err := c.valuesConverter.Convert(v.Values)
 		if err != nil {
 			return nil, fmt.Errorf("%w: Rest", err)
 		}
-		meta := c.metaConverter.Convert(v.Meta)
-		x := &input.Instance{
-			Values: values,
-			Meta:   meta,
-		}
-		if err := c.metaModifier.Modify(x, meta); err != nil {
-			return nil, err
-		}
+		x.Values = values
+
 		return x, nil
 	default:
 		return nil, errorx.Unexpected("Neither Chord nor Rest")
@@ -283,6 +311,14 @@ var (
 	_ ChordConverter = &SyllableChordConverter{}
 )
 
+type ScaleChangeable interface {
+	ChangeScale(scale *op.Scale)
+}
+
+var (
+	_ ScaleChangeable = &SyllableChordConverter{}
+)
+
 // SyllableChordConverter converts AST contains only syllables.
 type SyllableChordConverter struct {
 	scale *op.Scale
@@ -292,6 +328,10 @@ func NewSyllableChordConverter(scale *op.Scale) *SyllableChordConverter {
 	return &SyllableChordConverter{
 		scale: scale,
 	}
+}
+
+func (c *SyllableChordConverter) ChangeScale(scale *op.Scale) {
+	c.scale = scale
 }
 
 func (c SyllableChordConverter) Convert(v *ast.Chord) (*input.Chord, error) {

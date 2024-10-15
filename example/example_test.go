@@ -179,6 +179,37 @@ Track 0	@3840(4)	MetaEndOfTrack
 			output: ignoreStdout,
 		},
 		{
+			title: "syllable text into instances yaml key changes",
+			args:  []string{"text", "conv", "syllable", "--key", "D"},
+			input: `D[1] ; D, 1 beat
+A_7/E[1]{key=C} ; A7/E, 1 beat, key: D major to C major
+E[2] ; E, 2 beats
+R[1] ; Rest, 1 beat
+`,
+			output: `- chord:
+    degree: "1"
+    name: ""
+  values:
+    - "1"
+- chord:
+    degree: "6"
+    name: "7"
+    base: "5"
+  values:
+    - "1"
+  key: C
+  meta:
+    key: C
+- chord:
+    degree: "3"
+    name: ""
+  values:
+    - "2"
+- values:
+    - "1"
+`,
+		},
+		{
 			title: "syllable text into instances yaml",
 			args:  []string{"text", "conv", "syllable", "--key", "D"},
 			input: `D[1] ; D, 1 beat
