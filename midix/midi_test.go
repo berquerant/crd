@@ -9,7 +9,10 @@ import (
 )
 
 func TestWriter(t *testing.T) {
-	w := midix.NewWriter(midix.DefaultTicksPerQuoaterNote)
+	// logx.Setup(os.Stderr, slog.LevelDebug)
+
+	set, _ := midix.NewTrackSetControllerFromTrackNum(1)
+	w := midix.NewWriter(midix.DefaultTicksPerQuoaterNote, set)
 	w.Meter(4, 4)
 	w.Tempo(120)
 	assert.Nil(t, w.Note(1, 100, 60, 64))

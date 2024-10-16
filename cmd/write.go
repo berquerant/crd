@@ -218,7 +218,9 @@ func (w writeCmdArgs) writeMIDITo(wr io.Writer) error {
 }
 
 func (w writeCmdArgs) writeToPlay() (midix.Writer, error) {
-	mWriter := midix.NewWriter(midix.DefaultTicksPerQuoaterNote)
+	// TODO: trackNum as an arg
+	set, _ := midix.NewTrackSetControllerFromTrackNum(1)
+	mWriter := midix.NewWriter(midix.DefaultTicksPerQuoaterNote, set)
 	writer := play.NewWriter(w.cmap, func(k op.Key) play.Key {
 		return play.NewKey(k, w.cmap)
 	})
