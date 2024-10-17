@@ -9,8 +9,6 @@ import (
 	"gitlab.com/gomidi/midi/v2/smf"
 )
 
-// TODO: properly segment the track to allow for more sounds and metadata to coexist
-
 const (
 	DefaultTrackSequenceName   = "Piano"
 	DefaultInstrument          = "Piano"
@@ -34,12 +32,6 @@ type Writer interface {
 	Rest(value float64)
 	WriteTo(out io.Writer) (int64, error)
 }
-
-type (
-	// Track     = smf.Track
-
-	operation func(*smf.Track)
-)
 
 type MIDIWriter struct {
 	clock            smf.MetricTicks
@@ -78,6 +70,9 @@ func (w *MIDIWriter) addMeta(tickDelta uint32, opFunc OpFunc) {
 }
 func (w *MIDIWriter) addFixed(tickDelta uint32, trackNo int, opFunc OpFunc) {
 	w.add(NewTrackOp(tickDelta, NewFixedTrack(trackNo), opFunc))
+}
+func (w *MIDIWriter) addAll(tickDelta uint32, opFunc OpFunc) {
+	w.set.Distribute(NewTrackOp(tickDelta, NewMetaTrack(), opFunc))
 }
 
 func (w *MIDIWriter) init() {
@@ -191,5 +186,5 @@ func (w *MIDIWriter) Marker(text string) {
 }
 
 func (w *MIDIWriter) Close() {
-	w.addMeta(0, &Close{})
+	w.addAll(0, &Close{})
 }

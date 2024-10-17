@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/berquerant/crd/errorx"
+	"github.com/berquerant/crd/midix"
 	"github.com/berquerant/crd/note"
 	"github.com/berquerant/crd/op"
 	"github.com/berquerant/crd/util"
@@ -108,6 +109,15 @@ func getScale(cmd *cobra.Command) (*op.Scale, error) {
 		return nil, err
 	}
 	return scale, nil
+}
+
+func setTrackFlag(cmd *cobra.Command) {
+	cmd.PersistentFlags().Int("track", 2, "track num")
+}
+
+func getTrackSetController(cmd *cobra.Command) (*midix.TrackSetController, error) {
+	n, _ := cmd.Flags().GetInt("track")
+	return midix.NewTrackSetControllerFromTrackNum(n)
 }
 
 func setRootNoteFlag(cmd *cobra.Command) {

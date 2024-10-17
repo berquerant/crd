@@ -77,6 +77,12 @@ func (c *TrackSetController) Add(op *TrackOp) {
 	c.set.Add(n, op)
 }
 
+func (c *TrackSetController) Distribute(op *TrackOp) {
+	for i := range c.set.Len() {
+		c.set.Add(i, op)
+	}
+}
+
 func (c TrackSetController) Set() *TrackSet { return c.set }
 
 type TrackSet struct {
