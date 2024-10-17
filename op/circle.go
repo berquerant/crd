@@ -63,7 +63,7 @@ type Circle struct {
 }
 
 func (c Circle) Index(key Key) (int, bool) {
-	for i := 0; i < c.r.Len(); i++ {
+	for i := range c.r.Len() {
 		if c.r.At(i).Keys().In(key) {
 			return i, true
 		}
