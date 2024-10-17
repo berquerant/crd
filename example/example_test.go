@@ -43,7 +43,7 @@ func TestExample(t *testing.T) {
     degree: "4"
   values:
     - "2"`,
-			output: `Track 0	@0(0)	MetaTrackName text: "Piano"
+			output: `Track 0	@0(0)	MetaTrackName text: "crd"
 Track 0	@0(0)	MetaInstrument text: "Piano"
 Track 0	@0(0)	ProgramChange channel: 0 program: 0
 Track 0	@0(0)	MetaTempo bpm: 80.00
@@ -112,7 +112,7 @@ Track 0	@3840(4)	MetaEndOfTrack
     - "2"
   meta:
     txt: "IV"`,
-			output: `Track 0	@0(0)	MetaTrackName text: "Piano"
+			output: `Track 0	@0(0)	MetaTrackName text: "crd"
 Track 0	@0(0)	MetaInstrument text: "Piano"
 Track 0	@0(0)	ProgramChange channel: 0 program: 0
 Track 0	@0(0)	MetaTempo bpm: 100.00
