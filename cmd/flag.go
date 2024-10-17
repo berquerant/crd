@@ -130,7 +130,7 @@ func getProgramFlag(cmd *cobra.Command) uint8 {
 }
 
 func setTrackFlag(cmd *cobra.Command) {
-	cmd.PersistentFlags().Int("track", 2, "track num")
+	cmd.PersistentFlags().Int("track", 1, "track num")
 }
 
 func getTrackSetController(cmd *cobra.Command) (*midix.TrackSetController, error) {
