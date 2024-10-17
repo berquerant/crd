@@ -12,7 +12,12 @@ func TestWriter(t *testing.T) {
 	// logx.Setup(os.Stderr, slog.LevelDebug)
 
 	set, _ := midix.NewTrackSetControllerFromTrackNum(1)
-	w := midix.NewWriter(midix.DefaultTicksPerQuoaterNote, set)
+	w := midix.NewWriter(
+		midix.DefaultTicksPerQuoaterNote,
+		set,
+		midix.DefaultInstrument,
+		midix.DefaultProgram,
+	)
 	w.Meter(4, 4)
 	w.Tempo(120)
 	assert.Nil(t, w.Note(1, 100, 60, 64))
@@ -34,7 +39,7 @@ func TestWriter(t *testing.T) {
 
 	want := []row{
 		{
-			message: `MetaTrackName text: "Piano"`,
+			message: `MetaTrackName text: "crd"`,
 		},
 		{
 			message: `MetaInstrument text: "Piano"`,

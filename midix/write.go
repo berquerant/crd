@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	DefaultTrackSequenceName   = "Piano"
+	DefaultTrackSequenceName   = "crd"
 	DefaultInstrument          = "Piano"
 	DefaultTicksPerQuoaterNote = 960
 )
@@ -38,14 +38,23 @@ type MIDIWriter struct {
 	tickDelta        uint32
 	quoaterNoteTicks uint32
 	set              *TrackSetController
+	instrument       string
+	program          uint8
 }
 
-func NewWriter(ticksPerQuoaterNote uint16, set *TrackSetController) *MIDIWriter {
+func NewWriter(
+	ticksPerQuoaterNote uint16,
+	set *TrackSetController,
+	instrument string,
+	program uint8,
+) *MIDIWriter {
 	clock := smf.MetricTicks(ticksPerQuoaterNote)
 	w := &MIDIWriter{
 		clock:            clock,
 		quoaterNoteTicks: clock.Ticks4th(),
 		set:              set,
+		instrument:       instrument,
+		program:          program,
 	}
 	w.init()
 	return w
@@ -80,11 +89,11 @@ func (w *MIDIWriter) init() {
 		Text: DefaultTrackSequenceName,
 	})
 	w.addMeta(0, &MetaInstrument{
-		Text: DefaultInstrument,
+		Text: w.instrument,
 	})
 	w.addMeta(0, &ProgramChange{
 		Channel: 0,
-		Program: DefaultProgram,
+		Program: w.program,
 	})
 }
 

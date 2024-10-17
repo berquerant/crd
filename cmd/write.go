@@ -25,6 +25,8 @@ func init() {
 	setMeterPersistentFlag(writeCmd)
 	setKeyPersistentFlag(writeCmd)
 	setTrackFlag(writeCmd)
+	setInstrumentFlag(writeCmd)
+	setProgramFlag(writeCmd)
 	writeCmdPlay.Flags().StringP("port", "p", "", "midi out port name")
 	writeCmdConv.Flags().StringSliceP("command", "c", nil, "input instances conversions")
 }
@@ -205,9 +207,11 @@ var writeCmdParse = &cobra.Command{
 }
 
 type writeCmdArgs struct {
-	cmap      chord.Mapper
-	instances []op.Instance
-	trackSet  *midix.TrackSetController
+	cmap       chord.Mapper
+	instances  []op.Instance
+	trackSet   *midix.TrackSetController
+	instrument string
+	program    uint8
 }
 
 func (w writeCmdArgs) writeMIDITo(wr io.Writer) error {
@@ -220,7 +224,12 @@ func (w writeCmdArgs) writeMIDITo(wr io.Writer) error {
 }
 
 func (w writeCmdArgs) writeToPlay() (midix.Writer, error) {
-	mWriter := midix.NewWriter(midix.DefaultTicksPerQuoaterNote, w.trackSet)
+	mWriter := midix.NewWriter(
+		midix.DefaultTicksPerQuoaterNote,
+		w.trackSet,
+		w.instrument,
+		w.program,
+	)
 	writer := play.NewWriter(w.cmap, func(k op.Key) play.Key {
 		return play.NewKey(k, w.cmap)
 	})
@@ -274,9 +283,11 @@ func newWriteCmdArgsFromInputInstances(cmd *cobra.Command, inputInstances []*inp
 		instances[i] = v
 	}
 	return &writeCmdArgs{
-		cmap:      cmap,
-		instances: instances,
-		trackSet:  set,
+		cmap:       cmap,
+		instances:  instances,
+		trackSet:   set,
+		instrument: getInstrumentFlag(cmd),
+		program:    getProgramFlag(cmd),
 	}, nil
 }
 

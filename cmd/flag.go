@@ -111,6 +111,24 @@ func getScale(cmd *cobra.Command) (*op.Scale, error) {
 	return scale, nil
 }
 
+func setInstrumentFlag(cmd *cobra.Command) {
+	cmd.PersistentFlags().String("instrument", midix.DefaultInstrument, "instrument name")
+}
+
+func getInstrumentFlag(cmd *cobra.Command) string {
+	x, _ := cmd.Flags().GetString("instrument")
+	return x
+}
+
+func setProgramFlag(cmd *cobra.Command) {
+	cmd.PersistentFlags().Uint8("program", midix.DefaultProgram, "midi program, default is AcousticGrandPiano")
+}
+
+func getProgramFlag(cmd *cobra.Command) uint8 {
+	x, _ := cmd.Flags().GetUint8("program")
+	return x
+}
+
 func setTrackFlag(cmd *cobra.Command) {
 	cmd.PersistentFlags().Int("track", 2, "track num")
 }
