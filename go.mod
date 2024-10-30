@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/berquerant/marker v0.2.1
 	github.com/berquerant/mkvisitor v0.4.0
-	github.com/berquerant/ybase v0.6.2
+	github.com/berquerant/ybase v0.6.3
 	github.com/go-task/task/v3 v3.39.2
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0

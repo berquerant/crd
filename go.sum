@@ -12,8 +12,8 @@ github.com/berquerant/marker v0.2.1 h1:0mW3L5k0He6sK+vWSbzy3c+UvhPHUWdes9JAskNtw
 github.com/berquerant/marker v0.2.1/go.mod h1:o6ZvHIXMAmjDnFkWYQCuu8yDCrKdV6Rqp6BpH9S80n8=
 github.com/berquerant/mkvisitor v0.4.0 h1:qMgBB6t9htbW5yKo2JW5OuMK7HzthxFDczXSO0JwwNk=
 github.com/berquerant/mkvisitor v0.4.0/go.mod h1:iEez2kg/ooIBeVmcBZmYgXWOkah/UsgnHONDoFH9xAc=
-github.com/berquerant/ybase v0.6.2 h1:alR5M8B56PtNk8/EL9lElDpWfouOzMOU2aRhNBv5bFI=
-github.com/berquerant/ybase v0.6.2/go.mod h1:JI3EmpvawDBlgLd6JPej8RD/Z733vanfMfCxAmgjYb8=
+github.com/berquerant/ybase v0.6.3 h1:+4bWr2eN7u+u8C7Qni3xOahwwBkfBdgU4iCbrHree/I=
+github.com/berquerant/ybase v0.6.3/go.mod h1:JI3EmpvawDBlgLd6JPej8RD/Z733vanfMfCxAmgjYb8=
 github.com/bitfield/gotestdox v0.2.2 h1:x6RcPAbBbErKLnapz1QeAlf3ospg8efBsedU93CDsnE=
 github.com/bitfield/gotestdox v0.2.2/go.mod h1:D+gwtS0urjBrzguAkTM2wodsTQYFHdpx8eqRJ3N+9pY=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
