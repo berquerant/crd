@@ -3,17 +3,11 @@ module github.com/berquerant/crd
 go 1.24.0
 
 require (
-	github.com/berquerant/marker v0.2.1
-	github.com/berquerant/mkvisitor v0.4.0
 	github.com/berquerant/ybase v0.6.3
-	github.com/go-task/task/v3 v3.41.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	gitlab.com/gomidi/midi/v2 v2.2.19
-	golang.org/x/tools v0.30.0
-	golang.org/x/vuln v1.1.4
 	gopkg.in/yaml.v3 v3.0.1
-	gotest.tools/gotestsum v1.12.0
 )
 
 require (
@@ -23,6 +17,8 @@ require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v1.1.3 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
+	github.com/berquerant/marker v0.2.1 // indirect
+	github.com/berquerant/mkvisitor v0.4.0 // indirect
 	github.com/bitfield/gotestdox v0.2.2 // indirect
 	github.com/chainguard-dev/git-urls v1.0.2 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
@@ -39,6 +35,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.6.1 // indirect
 	github.com/go-git/go-git/v5 v5.13.1 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
+	github.com/go-task/task/v3 v3.41.0 // indirect
 	github.com/go-task/template v0.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
@@ -70,6 +67,19 @@ require (
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
 	golang.org/x/term v0.29.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/tools v0.30.0 // indirect
+	golang.org/x/vuln v1.1.4 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
+	gotest.tools/gotestsum v1.12.0 // indirect
 	mvdan.cc/sh/v3 v3.10.0 // indirect
+)
+
+tool (
+	github.com/berquerant/marker
+	github.com/berquerant/mkvisitor
+	github.com/go-task/task/v3/cmd/task
+	golang.org/x/tools/cmd/goyacc
+	golang.org/x/tools/cmd/stringer
+	golang.org/x/vuln/cmd/govulncheck
+	gotest.tools/gotestsum
 )

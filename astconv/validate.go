@@ -7,7 +7,7 @@ import (
 	"github.com/berquerant/crd/util"
 )
 
-//go:generate go run golang.org/x/tools/cmd/stringer -type ASTType -output validate_stringer_generated.go
+//go:generate go tool stringer -type ASTType -output validate_stringer_generated.go
 type ASTType int
 
 const (

@@ -214,7 +214,7 @@ func (c CircleOfFifth) SubDominant(key Key) (CircleMember, error) {
 	return r, nil
 }
 
-//go:generate go run golang.org/x/tools/cmd/stringer -type KeyConversion -output circle_stringer_generated.go
+//go:generate go tool stringer -type KeyConversion -output circle_stringer_generated.go
 type KeyConversion int
 
 const (

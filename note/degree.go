@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:generate go run golang.org/x/tools/cmd/stringer -type DegreeName -output degree_stringer_generated.go
+//go:generate go tool stringer -type DegreeName -output degree_stringer_generated.go
 type DegreeName int
 
 const (

@@ -156,7 +156,7 @@ type OpType interface {
 	IsOpType()
 }
 
-//go:generate go run github.com/berquerant/marker -output track_marker_generated.go -method IsOpType -type FixedTrack,MetaTrack
+//go:generate go tool marker -output track_marker_generated.go -method IsOpType -type FixedTrack,MetaTrack
 
 func NewFixedTrack(no int) *FixedTrack {
 	return &FixedTrack{
