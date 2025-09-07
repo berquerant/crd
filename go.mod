@@ -1,9 +1,9 @@
 module github.com/berquerant/crd
 
-go 1.24.4
+go 1.25.0
 
 require (
-	github.com/berquerant/ybase v0.7.1
+	github.com/berquerant/ybase v0.8.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.11.1
 	gitlab.com/gomidi/midi/v2 v2.2.19
