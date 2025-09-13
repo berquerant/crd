@@ -1,6 +1,6 @@
 module github.com/berquerant/crd
 
-go 1.25.0
+go 1.25.1
 
 require (
 	github.com/berquerant/ybase v0.8.0
