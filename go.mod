@@ -4,7 +4,7 @@ go 1.25.1
 
 require (
 	github.com/berquerant/ybase v0.8.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	gitlab.com/gomidi/midi/v2 v2.2.19
 	gopkg.in/yaml.v3 v3.0.1
